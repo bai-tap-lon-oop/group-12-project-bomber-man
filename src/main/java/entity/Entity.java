@@ -42,10 +42,12 @@ public abstract class Entity {
         return new Rectangle2D(pixelX, pixelY, sprite.getRealWidth(), sprite.getRealHeight());
     }
 
+//    Đánh dấu object có thể xóa
     public void remove() {
         removed = true;
     }
 
+//    Kiểm tra xem object có thể xóa hay k
     public boolean isRemoved() {
         return removed;
     }

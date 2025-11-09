@@ -40,6 +40,7 @@ public class Map {
     private int renderX;
     private int renderY;
 
+//    Tạo map
     public static Map getGameMap() {
         if (map == null) {
             map = new Map();
@@ -47,6 +48,7 @@ public class Map {
         return map;
     }
 
+//    Restart
     private void resetEntities() {
         tiles = new Entity[HEIGHT][WIDTH];
         enemies = new ArrayList<>();
@@ -66,6 +68,8 @@ public class Map {
         player.setSpeed(2);
         time = 60*200;
     }
+
+//    Tạo map và các object
     public void createMap(String mapPath) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(mapPath));
         topInfoImage = new Image("/top_info.png");
@@ -97,6 +101,7 @@ public class Map {
         }
     }
 
+//    Update các object bị remove đồng thời cộng score
     private void removeEntities() {
         ArrayList<Enemy> removedEnemies = new ArrayList<>();
         ArrayList<Bomb> removedBombs = new ArrayList<>();
@@ -162,7 +167,7 @@ public class Map {
         });
     }
 
-
+//    Update các sự thay đổi của map ví dụ sau khi đặt bom nổ
     public void updateMap() {
         if (revival) return;
         for (int i = 0; i < HEIGHT; i++) {

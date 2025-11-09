@@ -1,20 +1,24 @@
 package variables;
 
 public class Variables {
-    public static final String GAME_TITLE = "BOMBERMAN";
+    public static final String GAME_TITLE = "BOMBERMAN"; //Tên game
 
-    public static final int UP_BORDER = 2;
+    public static final int UP_BORDER = 2; // Thanh công cụ tắt, ẩn game
 
+//    Kích thước
     public static final int WIDTH = 31;
     public static final int HEIGHT = 13;
 
     public static final int WIDTH_SCREEN = 16;
     public static final int HEIGHT_SCREEN = HEIGHT;
+
+//    Di chuyển lên xuống trái phải
     public static final int dx[] = {0, 0, -1, 1};
     public static final int dy[] = {-1, 1, 0, 0};
 
     public static final int INF = 1000000000;
 
+//    Trạng thái player
     public static enum DIRECTION {
         UP,
         DOWN,
@@ -25,10 +29,14 @@ public class Variables {
         NONE,
 
     }
+
+//    Trạng thái bom
     public static enum STATUS {
         NOTEXPLODEDYET,
         EXPLODING,
     }
+
+//    Hình dạng ngọn lửa của bom khi nổ
     public static enum FLAME_SHAPE {
         BOMB_EXPLODED,
         VERTICAL,
@@ -38,6 +46,8 @@ public class Variables {
         VERTICAL_TOP_LAST,
         VERTICAL_DOWN_LAST,
     }
+
+//    Tài nguyên ở trong folder resources
     public static final String ICON_PATH = "/icon.png";
 
     public static final String[] MAP_URLS = {
