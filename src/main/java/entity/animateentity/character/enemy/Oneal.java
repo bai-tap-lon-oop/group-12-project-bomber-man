@@ -3,7 +3,7 @@ package entity.animateentity.character.enemy;
 import entity.animateentity.character.Bomber;
 import graphics.Sprite;
 import map.Map;
-import path.SpeedDistancePath;
+// TO DO
 import variables.Variables.DIRECTION;
 
 import static variables.Variables.DIRECTION.*;
@@ -23,9 +23,8 @@ public class Oneal extends Enemy{
         this.defaultChangeSpeed = 10;
     }
     public DIRECTION path(Map map, Bomber player, Enemy enemy){
-        SpeedDistancePath speedRandomPath = new SpeedDistancePath(map, player, enemy);
-        DIRECTION _direction = speedRandomPath.path();
-        return _direction;
+        // TO DO: Reimplement Oneal's intelligent pathfinding (SpeedDistancePath)
+        return direction;
     }
 
     @Override
