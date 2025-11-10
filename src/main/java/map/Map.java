@@ -5,7 +5,7 @@ import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.Flame;
-import entity.Entity;;
+import entity.Entity;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
 import game.MainGame;
