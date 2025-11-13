@@ -1,10 +1,13 @@
 # Bài tập lớn OOP - Bomberman Game
 
-Bài tập lớn môn Lập trình Hướng đối tượng - INT2204 22 
+Bài tập lớn môn Lập trình Hướng đối tượng - INT1332
 #### Người thực hiện:
 
-- Bùi Tuấn Dũng - 21020006
-- Lê Tuấn Đạt - 21020062
+- Nguyễn Sỹ Hoàng
+- Nguyễn Minh Nghĩa
+- Hoàng Đức Trung
+- Trung Trung
+- Nam Thành
 
 ## Mô tả về các đối tượng trong trò chơi
 
