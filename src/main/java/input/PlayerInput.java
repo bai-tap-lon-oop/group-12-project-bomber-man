@@ -19,18 +19,7 @@ public class PlayerInput implements KeyInput {
         Set<String> keySet = keyInput.keySet();
         for (String code : keySet) {
             if (keyInput.get(code)) {
-                switch (code) {
-                    case ("W"):
-                        return UP;
-                    case ("D"):
-                        return RIGHT;
-                    case ("S"):
-                        return DOWN;
-                    case ("A"):
-                        return LEFT;
-                    case ("SPACE"):
-                        return PLACEBOMB;
-                }
+                // TO DO
             }
         }
         return NONE;
