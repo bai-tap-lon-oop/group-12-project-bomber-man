@@ -5,7 +5,7 @@ import entity.animateentity.character.enemy.Enemy;
 import entity.staticentity.Grass;
 import entity.staticentity.SpeedItem;
 import graphics.Sprite;
-import input.KeyInput;
+// TO DO
 import sound.Sound;
 import texture.BombTexture;
 
@@ -14,21 +14,17 @@ import static graphics.Sprite.*;
 import static variables.Variables.DIRECTION.*;
 
 public class Bomber extends Character {
-    public KeyInput keyInput;
+    // TO DO
     public boolean canPlace = true;
 
     private int timeRevival;
 
     public Bomber(int x, int y, Sprite sprite, KeyInput keyInput) {
         super(x, y, sprite);
-        animation.put(LEFT, Sprite.PLAYER_LEFT);
-        animation.put(RIGHT, Sprite.PLAYER_RIGHT);
-        animation.put(UP, Sprite.PLAYER_UP);
-        animation.put(DOWN, Sprite.PLAYER_DOWN);
+        // TO DO
         animation.put(DESTROYED, Sprite.PLAYER_DESTROYED);
         currentAnimate = animation.get(DOWN);
-        this.keyInput = keyInput;
-        this.keyInput.initialization();
+        // TO DO
         this.defaultVel = 1;
         this.speed = 2;
         this.life = 3;
@@ -94,17 +90,10 @@ public class Bomber extends Character {
         this.setVelocity(0, 0);
         switch (direction) {
             case NONE -> this.setVelocity(0, 0);
-            case LEFT -> this.setVelocity(-defaultVel, 0);
-            case RIGHT -> this.setVelocity(defaultVel, 0);
-            case UP -> this.setVelocity(0, -defaultVel);
-            case DOWN -> this.setVelocity(0, defaultVel);
+            // TO DO
             case PLACEBOMB -> placeBombAt(pixelX, pixelY);
         }
-        if (direction != NONE && direction != PLACEBOMB) {
-            currentAnimate = animation.get(direction);
-            updateAnimation();
-            Sound.walk.play();
-        }
+        // TO DO
     }
 
     @Override
