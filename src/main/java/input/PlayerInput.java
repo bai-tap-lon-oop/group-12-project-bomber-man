@@ -11,7 +11,7 @@ public class PlayerInput implements KeyInput {
         keyInput.put("D", false);
         keyInput.put("W", false);
         keyInput.put("S", false);
-        keyInput.put("SPACE", false);
+        // TO DO
     }
 
     @Override
@@ -28,8 +28,7 @@ public class PlayerInput implements KeyInput {
                         return DOWN;
                     case ("A"):
                         return LEFT;
-                    case ("SPACE"):
-                        return PLACEBOMB;
+                    // TO DO
                 }
             }
         }
