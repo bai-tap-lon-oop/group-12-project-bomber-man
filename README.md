@@ -7,7 +7,7 @@ Bài tập lớn môn Lập trình Hướng đối tượng - INT1332
 - Nguyễn Minh Nghĩa
 - Hoàng Đức Trung
 - Trung Trung
-- Nam Thanh
+- Nam Thành
 
 ## Mô tả về các đối tượng trong trò chơi
 
