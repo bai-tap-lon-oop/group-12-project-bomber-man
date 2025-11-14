@@ -38,11 +38,35 @@ public class Bomber extends Character {
         canPlace = true;
         int bombX = 0;
         int bombY = 0;
-        // TO DO
+        // Xác định vị trí đặt bomb
+        // Cách đặt bomb là đặt bomb tại ô tile gần nhất
+        int baseX = x / SCALED_SIZE;
+        int baseY = y / SCALED_SIZE;
+
+        int remX = x % SCALED_SIZE;
+        int remY = y % SCALED_SIZE;
+
+        bombX = (remX >= SCALED_SIZE / 2) ? baseX + 1 : baseX;
+        bombY = (remY >= SCALED_SIZE / 2) ? baseY + 1 : baseY;
+
+        // Kiểm tra xem vị trí đặt bomb có trùng với bomb khác hay không
+        for (Bomb bomb: map.getBombs()) {
+            if (bomb.getTileX() == bombX && bomb.getTileY() == bombY) {
+                canPlace = false;
+            }
+        }
+
+        // Kiểm tra vị trí đặt bomb có trùng với enemy không
+        for (Enemy enemy: map.getEnemies()) {
+            if(enemy.getTileX() == bombX && enemy.getTileY() == bombY) {
+                canPlace = false;
+            }
+        }
+        // Nếu vị trí đã oke thì đặt bomb = cách tạo ra dối tượng bomb trên mao và thêm âm thanh
         if (map.getTile(bombX, bombY) instanceof Grass && map.getBombs().size() < Bomb.limit && canPlace) {
-            Bomb bomb = BombTexture.setBomb(bombX, bombY);
+            Bomb bomb = BombTexture.setBomb(bombX, bombY); // Tạo object bomb
             map.getBombs().add(bomb);
-            Sound.place_bomb.play();
+            Sound.place_bomb.play(); // Tạo âm thanh
         }
     }
 
