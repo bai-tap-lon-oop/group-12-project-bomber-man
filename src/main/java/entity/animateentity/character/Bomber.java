@@ -5,7 +5,7 @@ import entity.animateentity.character.enemy.Enemy;
 import entity.staticentity.Grass;
 import entity.staticentity.SpeedItem;
 import graphics.Sprite;
-// TO DO
+import input.KeyInput; // import interface KeyInput trong input để nhận key điều khiển Bomber
 import sound.Sound;
 import texture.BombTexture;
 
@@ -14,17 +14,23 @@ import static graphics.Sprite.*;
 import static variables.Variables.DIRECTION.*;
 
 public class Bomber extends Character {
-    // TO DO
+    public KeyInput keyInput; // Khai báo keyInput
     public boolean canPlace = true;
 
     private int timeRevival;
 
     public Bomber(int x, int y, Sprite sprite, KeyInput keyInput) {
         super(x, y, sprite);
-        // TO DO
+        // Gán sprite cho các hướng
+        animation.put(LEFT, sprite.PLAYER_LEFT); // Gán chuyển động
+        animation.put(RIGHT, sprite.PLAYER_RIGHT);
+        animation.put(UP, sprite.PLAYER_UP);
+        animation.put(DOWN, sprite.PLAYER_DOWN);
         animation.put(DESTROYED, Sprite.PLAYER_DESTROYED);
         currentAnimate = animation.get(DOWN);
         // TO DO
+        this.keyInput = keyInput;
+        this.keyInput.initialization(); // Khởi key tạo điều khiển
         this.defaultVel = 1;
         this.speed = 2;
         this.life = 3;
@@ -118,14 +124,26 @@ public class Bomber extends Character {
 
     @Override
     public void setDirection() {
-        direction = keyInput.handleKeyInput();
+        direction = keyInput.handleKeyInput(); // Lấy hướng di chuyển nhận vào từ bàn phím
         this.setVelocity(0, 0);
         switch (direction) {
             case NONE -> this.setVelocity(0, 0);
-            // TO DO
+            // Set tốc độ di chuyển treo trục tọa độ Oxy
+            // Dùng defaultVel để set tốc độ muốn nhanh hơn thì thay đổi
+            // K set speed cái này là để khi ăn item speed thì set để tăng tốc
+            case LEFT -> this.setVelocity(-defaultVel, 0);
+            case RIGHT -> this.setVelocity(defaultVel, 0);
+            case UP -> this.setVelocity(0, -defaultVel);
+            case DOWN -> this.setVelocity(0, defaultVel);
             case PLACEBOMB -> placeBombAt(pixelX, pixelY);
         }
-        // TO DO
+        // Xử lý nếu di chuyển và phát âm thanh
+        if (direction != NONE && direction != PLACEBOMB) {
+            // Lấy frame tương ứng với direction sau đó tạo hiệu ứng di chuyển
+            currentAnimate = animation.get(direction);
+            updateAnimation();
+            Sound.walk.play(); // Phát âm thanh di chuyển
+        }
     }
 
     @Override
