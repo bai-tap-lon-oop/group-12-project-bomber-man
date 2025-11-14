@@ -70,13 +70,57 @@ public class Bomber extends Character {
         }
     }
 
-    @Override
+     @Override
     public void checkCollision() {
-        super.checkCollision();
-        if (immortal > 0) {
+        super.checkCollision();// Va chạm tường
+        if (immortal > 0) { 
             immortal--;
         }
-        // TO DO
+        //Va chạm với Quái (Enemy)
+        map.getEnemies().forEach(enemy -> {
+            if (this.isCollider(enemy)) {
+                if (immortal == 0) {
+                    destroy();
+                }
+            }
+        });
+        //Va chạm với Bomb 
+        map.getBombs().forEach(bomb -> {
+            if (!this.isCollider(bomb)) {
+                bomb.setBlock(true);
+            }
+        });
+        //Va chạm với Vật phẩm (Item)
+        map.getItems().forEach(item -> {
+            if (this.isCollider(item)) {
+                Sound.get_item.play();
+                item.setActivated(true);
+                item.remove();
+                if (item instanceof SpeedItem) {
+                    setSpeed(SpeedItem.increasedSpeed);
+                }
+                item.delete();// Xóa vật phẩm khỏi map
+            }
+        });
+        //Khi Bomber đi vào góc tường, sẽ tự động "trượt" thay vì bị kẹt cứng.
+        if (isCollision) {
+            for (int i = -8 - speed; i <= 8 + speed; i++) {
+                switch (direction) {
+                    case UP, DOWN -> pixelX += i;
+                    case LEFT, RIGHT -> pixelY += i;
+                }
+                super.checkCollision();
+                if (!isCollision) {
+                    break;
+                }
+                switch (direction) {
+                    case UP, DOWN -> pixelX -= i;
+                    case LEFT, RIGHT -> pixelY -= i;
+                }
+            }
+        }
+        tileX = pixelX / SCALED_SIZE;
+        tileY = pixelY / SCALED_SIZE;
     }
 
 
@@ -101,7 +145,15 @@ public class Bomber extends Character {
 
     @Override
     public void delete() {
-        // TO DO
+        //Hồi sinh tức thì(Instant Respawn)
+        this.life--;//Trừ 1 mạng
+        timeRevival = 7;
+        immortal = 100;
+        map.setRevival(true);
+        setPosition(SCALED_SIZE, SCALED_SIZE);//Reset về vị trí (1,1)
+        destroyed = false;//Đặt lại trạng thái
+        direction = NONE;//Dừng di chuyển
+        setSprite(Sprite.PLAYER_DOWN[0]);//Đặt lại ảnh
         Sound.bomber_die.play();
     }
 
