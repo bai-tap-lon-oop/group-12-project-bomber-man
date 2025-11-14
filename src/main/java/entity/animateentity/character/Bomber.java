@@ -76,47 +76,7 @@ public class Bomber extends Character {
         if (immortal > 0) {
             immortal--;
         }
-        map.getEnemies().forEach(enemy -> {
-            if (this.isCollider(enemy)) {
-                if (immortal == 0) {
-                    destroy();
-                }
-            }
-        });
-        map.getBombs().forEach(bomb -> {
-            if (!this.isCollider(bomb)) {
-                bomb.setBlock(true);
-            }
-        });
-        map.getItems().forEach(item -> {
-            if (this.isCollider(item)) {
-                Sound.get_item.play();
-                item.setActivated(true);
-                item.remove();
-                if (item instanceof SpeedItem) {
-                    setSpeed(SpeedItem.increasedSpeed);
-                }
-                item.delete();
-            }
-        });
-        if (isCollision) {
-            for (int i = -8 - speed; i <= 8 + speed; i++) {
-                switch (direction) {
-                    case UP, DOWN -> pixelX += i;
-                    case LEFT, RIGHT -> pixelY += i;
-                }
-                super.checkCollision();
-                if (!isCollision) {
-                    break;
-                }
-                switch (direction) {
-                    case UP, DOWN -> pixelX -= i;
-                    case LEFT, RIGHT -> pixelY -= i;
-                }
-            }
-        }
-        tileX = pixelX / SCALED_SIZE;
-        tileY = pixelY / SCALED_SIZE;
+        // TO DO
     }
 
 
@@ -141,14 +101,7 @@ public class Bomber extends Character {
 
     @Override
     public void delete() {
-        this.life--;
-        timeRevival = 7;
-        immortal = 100;
-        map.setRevival(true);
-        setPosition(SCALED_SIZE, SCALED_SIZE);
-        destroyed = false;
-        direction = NONE;
-        setSprite(Sprite.PLAYER_DOWN[0]);
+        // TO DO
         Sound.bomber_die.play();
     }
 
