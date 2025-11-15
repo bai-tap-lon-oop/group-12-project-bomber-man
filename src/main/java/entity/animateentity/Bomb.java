@@ -25,38 +25,46 @@ public class Bomb extends AnimateEntity {
 
     @Override
     public void update() {
+        //Đếm ngược thơi gian bom nổ
         if (timetoExplode != 0) {
             updateAnimation();
             timetoExplode--;
-        } else {
-            delete();
-            Flame flm = FlameTexture.setFlame("be", this.tileX, this.tileY);
-            map.getFlames().add(flm);
-            for (int i = 1; i <= flm.flameLength; i++) {
+        }
+        // Khi bom nổ
+        else {
+            delete(); // Xoá bom đi
+            Flame flm = FlameTexture.setFlame("be", this.tileX, this.tileY); // Tạo ngọn lửa khi bom nổ và lâ tọa độ x, y
+            map.getFlames().add(flm); // Thêm ngọn lửa vào arraylist<flame> của map
+            // Duyệt vòng for để bomb nổ chạy từ vị trí 1 đến vị trí xa nhất bomb có thể nổ tới
+            for(int i = 1; i <= flm.flameLength; i++) {
+                // Lấy tọa độ trung tâm khi bom nổ
                 int x = flm.getTileX();
                 int y = flm.getTileY();
                 int ii = i;
-                if (down) {
+                // Xử lý nổ theo hướng down
+                if(down) {
+                    //Kiểm tra xem tại vị trí (x, y + ii) có bomb khác k
+                    //Nếu có để bomb đó nổ ngay và không lan xuống nữa
                     map.getBombs().forEach(bomb -> {
-                        if (bomb.getTileX() == x && bomb.getTileY() == (y + ii)) {
+                        if(bomb.getTileX() == x && bomb.getTileY() == (y + ii)) {
                             bomb.setTimetoExplode(0);
                             down = false;
-                            if(bomb.up) {
-                                cnt++;
-                            }
+                            if(bomb.up) cnt++;
                         }
                     });
+                    //Kiểm tra xem tại vị trí (x, y + ii) nếu đang có flame của vụ nổ khác thì không tạo thêm bomb nữa
                     map.getFlames().forEach(flame -> {
-                        if (flame.getTileX() == x && flame.getTileY() == (y+ii)) {
+                        if(flame.getTileX() == x && flame.getTileY() == (y + ii)) {
                             down = false;
                         }
                     });
-                    if (map.getTile(x, y + i) instanceof Grass == false) {
+                    //Nếu tile không phải grass xử lý interactWith với tile tương ứng khi nổ bomb
+                    if(map.getTile(x, y + ii) instanceof Grass == false) {
                         flm.interactWith(map.getTile(x, y + i));
                         down = false;
                     }
                 }
-
+                //Xử lý tương tự với up, left, right
                 if (up) {
                     map.getBombs().forEach(bomb -> {
                         if (bomb.getTileX() == x && bomb.getTileY() == (y - ii)) {
@@ -68,7 +76,7 @@ public class Bomb extends AnimateEntity {
                         }
                     });
                     map.getFlames().forEach(flame -> {
-                        if (flame.getTileX() == x && flame.getTileY() == (y-ii)) {
+                        if (flame.getTileX() == x && flame.getTileY() == (y - ii)) {
                             up = false;
                         }
                     });
@@ -89,7 +97,7 @@ public class Bomb extends AnimateEntity {
                         }
                     });
                     map.getFlames().forEach(flame -> {
-                        if (flame.getTileX() == (x+ii) && flame.getTileY() == (y)) {
+                        if (flame.getTileX() == (x + ii) && flame.getTileY() == (y)) {
                             right = false;
                         }
                     });
@@ -99,6 +107,7 @@ public class Bomb extends AnimateEntity {
 
                     }
                 }
+
                 if (left) {
                     map.getBombs().forEach(bomb -> {
                         if (bomb.getTileX() == (x - ii) && bomb.getTileY() == (y)) {
@@ -110,7 +119,7 @@ public class Bomb extends AnimateEntity {
                         }
                     });
                     map.getFlames().forEach(flame -> {
-                        if (flame.getTileX() == (x-ii) && flame.getTileY() == (y)) {
+                        if (flame.getTileX() == (x - ii) && flame.getTileY() == (y)) {
                             left = false;
                         }
                     });
@@ -120,11 +129,14 @@ public class Bomb extends AnimateEntity {
                     }
                 }
 
+                // Xử lý hình ngọn lửa ở cuối sẽ khác biệt
+                // Nếu là ngọn lửa cuối
                 if (i == flm.flameLength) {
                     if (down) {
-                        Flame vdl = FlameTexture.setFlame("vdl", x, y + i);
-                        map.getFlames().add(vdl);
+                        Flame vdl = FlameTexture.setFlame("vdl", x, y + i); //Flema hướng down cuối cùng
+                        map.getFlames().add(vdl); // Thêm vào map
                     }
+                    // Tương tự với các hướng up, left, right
                     if (up) {
                         Flame vtl = FlameTexture.setFlame("vtl", x, y - i);
                         map.getFlames().add(vtl);
@@ -137,8 +149,9 @@ public class Bomb extends AnimateEntity {
                         Flame hrl = FlameTexture.setFlame("hrl", x + i, y);
                         map.getFlames().add(hrl);
                     }
-
-                } else {
+                }
+                // Nếu không phải
+                else {
                     if (down) {
                         Flame vd = FlameTexture.setFlame("v", x, y + i);
                         map.getFlames().add(vd);
@@ -157,8 +170,9 @@ public class Bomb extends AnimateEntity {
                     }
                 }
             }
+            //Nếu bomb hiện tại nổ không kick hoạt bomb khác nổ thì phát âm thanh
             if(cnt == 0) {
-                Sound.bomb_explosion.play();
+                Sound.bomb_explosion.play(); //Phát âm thanh
             }
         }
     }

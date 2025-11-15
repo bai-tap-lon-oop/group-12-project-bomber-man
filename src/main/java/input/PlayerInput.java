@@ -19,12 +19,18 @@ public class PlayerInput implements KeyInput {
         Set<String> keySet = keyInput.keySet();
         for (String code : keySet) {
             if (keyInput.get(code)) {
-                // Set key điều khiển hướng di chuyển của nhân vật
-                if (code.equals("W")) return UP;
-                else if(code.equals("S")) return DOWN;
-                else if(code.equals("D")) return RIGHT;
-                else if(code.equals("A")) return LEFT;
-                else if(code.equals("SPACE")) return PLACEBOMB;
+                switch (code) {
+                    case ("W"):
+                        return UP;
+                    case ("D"):
+                        return RIGHT;
+                    case ("S"):
+                        return DOWN;
+                    case ("A"):
+                        return LEFT;
+                    case ("SPACE"):
+                        return PLACEBOMB;
+                }
             }
         }
         return NONE;

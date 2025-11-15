@@ -5,7 +5,7 @@ import entity.animateentity.character.enemy.Enemy;
 import entity.staticentity.Grass;
 import entity.staticentity.SpeedItem;
 import graphics.Sprite;
-import input.KeyInput; // import interface KeyInput trong input để nhận key điều khiển Bomber
+import input.KeyInput;
 import sound.Sound;
 import texture.BombTexture;
 
@@ -14,23 +14,21 @@ import static graphics.Sprite.*;
 import static variables.Variables.DIRECTION.*;
 
 public class Bomber extends Character {
-    public KeyInput keyInput; // Khai báo keyInput
+    public KeyInput keyInput;
     public boolean canPlace = true;
 
     private int timeRevival;
 
     public Bomber(int x, int y, Sprite sprite, KeyInput keyInput) {
         super(x, y, sprite);
-        // Gán sprite cho các hướng
-        animation.put(LEFT, sprite.PLAYER_LEFT); // Gán chuyển động
-        animation.put(RIGHT, sprite.PLAYER_RIGHT);
-        animation.put(UP, sprite.PLAYER_UP);
-        animation.put(DOWN, sprite.PLAYER_DOWN);
+        animation.put(LEFT, Sprite.PLAYER_LEFT);
+        animation.put(RIGHT, Sprite.PLAYER_RIGHT);
+        animation.put(UP, Sprite.PLAYER_UP);
+        animation.put(DOWN, Sprite.PLAYER_DOWN);
         animation.put(DESTROYED, Sprite.PLAYER_DESTROYED);
         currentAnimate = animation.get(DOWN);
-        // TO DO
         this.keyInput = keyInput;
-        this.keyInput.initialization(); // Khởi key tạo điều khiển
+        this.keyInput.initialization();
         this.defaultVel = 1;
         this.speed = 2;
         this.life = 3;
@@ -40,35 +38,35 @@ public class Bomber extends Character {
         canPlace = true;
         int bombX = 0;
         int bombY = 0;
-        if (x % SCALED_SIZE < y % SCALED_SIZE) {
-            bombX = x / SCALED_SIZE;
-            if (y % SCALED_SIZE > SCALED_SIZE / 2) {
-                bombY = y / SCALED_SIZE + 1;
-            } else {
-                bombY = y / SCALED_SIZE;
-            }
-        } else {
-            bombY = y / SCALED_SIZE;
-            if (x % SCALED_SIZE > SCALED_SIZE / 2) {
-                bombX = x / SCALED_SIZE + 1;
-            } else {
-                bombX = x / SCALED_SIZE;
-            }
-        }
+        // Xác định vị trí đặt bomb
+        // Cách đặt bomb là đặt bomb tại ô tile gần nhất
+        int baseX = x / SCALED_SIZE;
+        int baseY = y / SCALED_SIZE;
+
+        int remX = x % SCALED_SIZE;
+        int remY = y % SCALED_SIZE;
+
+        bombX = (remX >= SCALED_SIZE / 2) ? baseX + 1 : baseX;
+        bombY = (remY >= SCALED_SIZE / 2) ? baseY + 1 : baseY;
+
+        // Kiểm tra xem vị trí đặt bomb có trùng với bomb khác hay không
         for (Bomb bomb: map.getBombs()) {
             if (bomb.getTileX() == bombX && bomb.getTileY() == bombY) {
                 canPlace = false;
             }
         }
+
+        // Kiểm tra vị trí đặt bomb có trùng với enemy không
         for (Enemy enemy: map.getEnemies()) {
             if(enemy.getTileX() == bombX && enemy.getTileY() == bombY) {
                 canPlace = false;
             }
         }
+        // Nếu vị trí đã oke thì đặt bomb = cách tạo ra dối tượng bomb trên mao và thêm âm thanh
         if (map.getTile(bombX, bombY) instanceof Grass && map.getBombs().size() < Bomb.limit && canPlace) {
-            Bomb bomb = BombTexture.setBomb(bombX, bombY);
+            Bomb bomb = BombTexture.setBomb(bombX, bombY); // Tạo object bomb
             map.getBombs().add(bomb);
-            Sound.place_bomb.play();
+            Sound.place_bomb.play(); // Tạo âm thanh
         }
     }
 
@@ -128,21 +126,16 @@ public class Bomber extends Character {
         this.setVelocity(0, 0);
         switch (direction) {
             case NONE -> this.setVelocity(0, 0);
-            // Set tốc độ di chuyển treo trục tọa độ Oxy
-            // Dùng defaultVel để set tốc độ muốn nhanh hơn thì thay đổi
-            // K set speed cái này là để khi ăn item speed thì set để tăng tốc
             case LEFT -> this.setVelocity(-defaultVel, 0);
             case RIGHT -> this.setVelocity(defaultVel, 0);
             case UP -> this.setVelocity(0, -defaultVel);
             case DOWN -> this.setVelocity(0, defaultVel);
             case PLACEBOMB -> placeBombAt(pixelX, pixelY);
         }
-        // Xử lý nếu di chuyển và phát âm thanh
         if (direction != NONE && direction != PLACEBOMB) {
-            // Lấy frame tương ứng với direction sau đó tạo hiệu ứng di chuyển
             currentAnimate = animation.get(direction);
             updateAnimation();
-            Sound.walk.play(); // Phát âm thanh di chuyển
+            Sound.walk.play();
         }
     }
 
