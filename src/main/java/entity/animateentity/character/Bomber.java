@@ -126,16 +126,21 @@ public class Bomber extends Character {
         this.setVelocity(0, 0);
         switch (direction) {
             case NONE -> this.setVelocity(0, 0);
+            // Set tốc độ di chuyển treo trục tọa độ Oxy
+            // Dùng defaultVel để set tốc độ muốn nhanh hơn thì thay đổi
+            // K set speed cái này là để khi ăn item speed thì set để tăng tốc
             case LEFT -> this.setVelocity(-defaultVel, 0);
             case RIGHT -> this.setVelocity(defaultVel, 0);
             case UP -> this.setVelocity(0, -defaultVel);
             case DOWN -> this.setVelocity(0, defaultVel);
             case PLACEBOMB -> placeBombAt(pixelX, pixelY);
         }
+        // Xử lý nếu di chuyển và phát âm thanh
         if (direction != NONE && direction != PLACEBOMB) {
+            // Lấy frame tương ứng với direction sau đó tạo hiệu ứng di chuyển
             currentAnimate = animation.get(direction);
             updateAnimation();
-            Sound.walk.play();
+            Sound.walk.play(); // Phát âm thanh di chuyển
         }
     }
 
