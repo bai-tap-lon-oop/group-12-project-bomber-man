@@ -5,7 +5,7 @@ import entity.animateentity.character.enemy.Enemy;
 import entity.staticentity.Grass;
 import entity.staticentity.SpeedItem;
 import graphics.Sprite;
-import input.KeyInput;
+import input.KeyInput; // import interface KeyInput trong input để nhận key điều khiển Bomber
 import sound.Sound;
 import texture.BombTexture;
 
@@ -14,13 +14,14 @@ import static graphics.Sprite.*;
 import static variables.Variables.DIRECTION.*;
 
 public class Bomber extends Character {
-    public KeyInput keyInput;
+    public KeyInput keyInput; // Khai báo keyInput
     public boolean canPlace = true;
 
     private int timeRevival;
 
     public Bomber(int x, int y, Sprite sprite, KeyInput keyInput) {
         super(x, y, sprite);
+        // Gán sprite cho các hướng
         animation.put(LEFT, Sprite.PLAYER_LEFT);
         animation.put(RIGHT, Sprite.PLAYER_RIGHT);
         animation.put(UP, Sprite.PLAYER_UP);
@@ -28,7 +29,7 @@ public class Bomber extends Character {
         animation.put(DESTROYED, Sprite.PLAYER_DESTROYED);
         currentAnimate = animation.get(DOWN);
         this.keyInput = keyInput;
-        this.keyInput.initialization();
+        this.keyInput.initialization(); // Khởi key tạo điều khiển
         this.defaultVel = 1;
         this.speed = 2;
         this.life = 3;
