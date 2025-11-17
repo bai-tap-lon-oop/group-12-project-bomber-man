@@ -101,6 +101,7 @@ public class MainGame extends Application {
                         countdown = 160;
                         backToMenu = false;
                         choseStart = true;
+                        score = 0; // Reset score when starting a new game
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
