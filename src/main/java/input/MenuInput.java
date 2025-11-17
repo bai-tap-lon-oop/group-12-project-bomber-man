@@ -10,6 +10,7 @@ public class MenuInput implements KeyInput {
         keyInput.put("W", false);
         keyInput.put("S", false);
         keyInput.put("ENTER", false);
+        keyInput.put("ESCAPE", false);
     }
 
     @Override
@@ -24,6 +25,8 @@ public class MenuInput implements KeyInput {
                         return DOWN;
                     case ("ENTER"):
                         return DESTROYED;
+                    case ("ESCAPE"):
+                        return LEFT; // Use LEFT as ESC signal
                 }
             }
         }

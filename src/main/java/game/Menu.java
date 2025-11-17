@@ -80,6 +80,21 @@ public class Menu {
         }
     }
 
+    public void renderWinPopup(GraphicsContext graphicsContext, int score, int timeRemaining) {
+        graphicsContext.drawImage(Background, 0, 0);
+        // Title
+        graphicsContext.fillText("YOU WIN!", SCALED_SIZE * 5, SCALED_SIZE * 5);
+        // Score display
+        graphicsContext.fillText("Score: " + score, SCALED_SIZE * 5.5, SCALED_SIZE * 6.5);
+        graphicsContext.fillText("Highscore: " + highscore, SCALED_SIZE * 4.5, SCALED_SIZE * 7.5);
+        // Instructions
+        graphicsContext.fillText("Press ENTER to Menu", SCALED_SIZE * 3.5, SCALED_SIZE * 9);
+        graphicsContext.fillText("Press ESC to Exit", SCALED_SIZE * 4, SCALED_SIZE * 10);
+        // Auto return countdown
+        int secondsRemaining = (timeRemaining / 120) + 1; // Convert frames to seconds at 120 FPS
+        graphicsContext.fillText("Auto return in " + secondsRemaining + "s", SCALED_SIZE * 4, SCALED_SIZE * 11);
+    }
+
     public boolean isStart() {
         return start;
     }

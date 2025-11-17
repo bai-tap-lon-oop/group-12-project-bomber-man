@@ -4,6 +4,7 @@ import input.KeyInput;
 import sound.Sound;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,6 +19,7 @@ import java.io.FileNotFoundException;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
+import static variables.Variables.DIRECTION.*;
 
 public class MainGame extends Application {
     private static Map map = Map.getGameMap();
@@ -33,6 +35,7 @@ public class MainGame extends Application {
     private Canvas gameMenu;
     private final double FPS = 120.0;
     private int countdown;
+    private int winCountdown; // 10 seconds at 120 FPS = 1200 frames
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;
@@ -71,6 +74,7 @@ public class MainGame extends Application {
         Sound.menu_sound.play();
         Sound.menu_sound.loop();
         countdown = 160;
+        winCountdown = 1200; // 10 seconds at 120 FPS
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long currentTime) {
@@ -130,16 +134,29 @@ public class MainGame extends Application {
                             menu.renderMessage('o', gameMenuContext);
                             countdown--;
                         }
-                        if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
-                            if(countdown == 160) {
+                        if((backToMenu == true && win == true) || (winCountdown != 1200 && win == true)) {
+                            if(winCountdown == 1200) {
                                 Sound.level_complete.play();
                                 stage.setScene(scene2);
                             }
                             backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext);
-                            countdown--;
+                            // Show enhanced win popup
+                            menu.renderWinPopup(gameMenuContext, score, winCountdown);
+                            
+                            // Handle user input for win screen
+                            DIRECTION winInput = menu.keyInput.handleKeyInput();
+                            menu.keyInput.initialization();
+                            
+                            if (winInput == DESTROYED) { // ENTER pressed - return to menu immediately
+                                winCountdown = 0;
+                            } else if (winInput == LEFT) { // ESCAPE pressed - exit game
+                                Platform.exit();
+                            } else {
+                                winCountdown--; // Auto countdown
+                            }
                         }
-                        if (countdown == 0) {
+                        if (winCountdown == 0 && win == true) {
+                            winCountdown = 1200;
                             countdown = 160;
                             choseStart = false;
                             Sound.stage_sound.stop();
@@ -147,6 +164,14 @@ public class MainGame extends Application {
                             Sound.menu_sound.loop();
                             backToMenu = true;
                             win = false;
+                        }
+                        if (countdown == 0 && win == false) {
+                            countdown = 160;
+                            choseStart = false;
+                            Sound.stage_sound.stop();
+                            Sound.menu_sound.play();
+                            Sound.menu_sound.loop();
+                            backToMenu = true;
                         }
 
                     }
