@@ -5,7 +5,7 @@ import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.Flame;
-import entity.Entity;;
+import entity.Entity;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
 import entity.staticentity.StaticEntity;
@@ -18,7 +18,6 @@ import javafx.scene.image.Image;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -42,6 +41,9 @@ public class Map {
     private int renderX;
     private int renderY;
 
+    private int width;
+    private int height;
+
     public static Map getGameMap() {
         if (map == null) {
             map = new Map();
@@ -50,7 +52,7 @@ public class Map {
     }
 
     private void resetEntities() {
-        tiles = new Entity[HEIGHT][WIDTH];
+        tiles = new Entity[height][width];
         enemies = new ArrayList<>();
         bombs = new ArrayList<>();
         flames = new ArrayList<>();
@@ -61,25 +63,51 @@ public class Map {
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
+
     public void resetNumber() {
         Flame.flameLength = 1;
         Bomb.limit = 1;
         MainGame.setNewScore(-MainGame.getScore());
         player.setSpeed(2);
-        time = 60*200;
+        time = 60 * 200;
     }
+
     public void createMap(String mapPath) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(mapPath));
         topInfoImage = new Image("/top_info.png");
-        String _string = scanner.nextLine();
-        levelNumber = _string.charAt(0) - '0';
+
+        if (scanner.hasNextInt()) {
+            levelNumber = scanner.nextInt();
+            this.height = scanner.nextInt();
+            this.width = scanner.nextInt();
+            scanner.nextLine();
+        }
+
         resetEntities();
         revival = false;
-        for (int i = 0; i < HEIGHT; i++) {
-            String string = scanner.nextLine();
-            for (int j = 0; j < WIDTH; j++) {
-                char c = string.charAt(j);
+
+        for (int i = 0; i < height; i++) {
+            String string = scanner.hasNextLine() ? scanner.nextLine() : "";
+
+            for (int j = 0; j < width; j++) {
+                char c;
+                if (j < string.length()) {
+                    c = string.charAt(j);
+                } else {
+                    c = ' ';
+                }
+
                 tiles[i][j] = StaticTexture.setStatic(c, i, j);
+
+                if (tiles[i][j] == null) {
+                    tiles[i][j] = StaticTexture.setStatic(' ', i, j);
+                }
+
+                // [SỬA LỖI 1] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall' (là Sprite)
+                if (tiles[i][j] == null) {
+                    tiles[i][j] = new Wall(j, i, wall);
+                }
+
                 if (tiles[i][j] instanceof Item) {
                     items.add((Item) tiles[i][j]);
                 }
@@ -97,6 +125,7 @@ public class Map {
                 }
             }
         }
+        scanner.close();
     }
 
     private void removeEntities() {
@@ -105,95 +134,49 @@ public class Map {
         ArrayList<Flame> removedFlames = new ArrayList<>();
         ArrayList<Item> removedItems = new ArrayList<>();
         ArrayList<Score> removedScores = new ArrayList<>();
-        scores.forEach(score -> {
-            if (score.isRemoved()) {
-                removedScores.add(score);
-            }
-        });
-        items.forEach(item -> {
-            if (item.isRemoved()) {
-                removedItems.add(item);
-            }
-        });
-        enemies.forEach(enemy -> {
-            if (enemy.isRemoved()) {
-                removedEnemies.add(enemy);
-            }
-        });
-        bombs.forEach(bomb -> {
-            if (bomb.isRemoved()) {
-                removedBombs.add(bomb);
-            }
-        });
-        flames.forEach(flame -> {
-            if (flame.isRemoved()) {
-                removedFlames.add(flame);
-            }
-        });
-        if (player.isRemoved()) player = null;
+
+        scores.forEach(score -> { if (score.isRemoved()) removedScores.add(score); });
+        items.forEach(item -> { if (item.isRemoved()) removedItems.add(item); });
+        enemies.forEach(enemy -> { if (enemy.isRemoved()) removedEnemies.add(enemy); });
+        bombs.forEach(bomb -> { if (bomb.isRemoved()) removedBombs.add(bomb); });
+        flames.forEach(flame -> { if (flame.isRemoved()) removedFlames.add(flame); });
+
+        if (player != null && player.isRemoved()) player = null;
+
         removedEnemies.forEach(enemy -> {
-            if (enemy instanceof Balloom) {
-                Score score = ScoreTexture.setScore('b', enemy.getTileX(), enemy.getTileY());
-                scores.add(score);
-            } else if (enemy instanceof Oneal) {
-                Score score = ScoreTexture.setScore('o', enemy.getTileX(), enemy.getTileY());
-                scores.add(score);
-            } else if (enemy instanceof Doll) {
-                Score score = ScoreTexture.setScore('d', enemy.getTileX(), enemy.getTileY());
-                scores.add(score);
-            } else if (enemy instanceof Minvo) {
-                Score score = ScoreTexture.setScore('m', enemy.getTileX(), enemy.getTileY());
-                scores.add(score);
-            } else if (enemy instanceof Kondoria) {
-                Score score = ScoreTexture.setScore('k', enemy.getTileX(), enemy.getTileY());
-                scores.add(score);
-            }
+            if (enemy instanceof Balloom) scores.add(ScoreTexture.setScore('b', enemy.getTileX(), enemy.getTileY()));
+            else if (enemy instanceof Oneal) scores.add(ScoreTexture.setScore('o', enemy.getTileX(), enemy.getTileY()));
+            else if (enemy instanceof Doll) scores.add(ScoreTexture.setScore('d', enemy.getTileX(), enemy.getTileY()));
+            else if (enemy instanceof Minvo) scores.add(ScoreTexture.setScore('m', enemy.getTileX(), enemy.getTileY()));
+            else if (enemy instanceof Kondoria) scores.add(ScoreTexture.setScore('k', enemy.getTileX(), enemy.getTileY()));
             enemies.remove(enemy);
         });
-        removedBombs.forEach(bomb -> {
-            bombs.remove(bomb);
-        });
-        removedFlames.forEach(flame -> {
-            flames.remove(flame);
-        });
-        removedItems.forEach(item -> {
-            items.remove(item);
-        });
-        removedScores.forEach(score -> {
-            scores.remove(score);
-        });
-    }
 
+        removedBombs.forEach(bomb -> bombs.remove(bomb));
+        removedFlames.forEach(flame -> flames.remove(flame));
+        removedItems.forEach(item -> items.remove(item));
+        removedScores.forEach(score -> scores.remove(score));
+    }
 
     public void updateMap() {
         if (revival) return;
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                tiles[i][j].update();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (tiles[i][j] != null) tiles[i][j].update();
             }
         }
-        enemies.forEach(enemy -> {
-            enemy.update();
-        });
-        player.update();
-        bombs.forEach(bomb -> {
-            bomb.update();
-        });
-        flames.forEach(flame -> {
-            flame.update();
-        });
-        items.forEach(item -> {
-            item.update();
-        });
-        scores.forEach(score -> {
-            score.update();
-        });
+        enemies.forEach(Enemy::update);
+        if (player != null) player.update();
+        bombs.forEach(Bomb::update);
+        flames.forEach(Flame::update);
+        items.forEach(Item::update);
+        scores.forEach(Score::update);
         removeEntities();
     }
 
     public void renderTopInfo(GraphicsContext graphicsContext) {
         graphicsContext.drawImage(topInfoImage, 0, 0);
-        graphicsContext.fillText("Score: " + String.valueOf(MainGame.getScore()), 0.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
+        graphicsContext.fillText("Score: " + MainGame.getScore(), 0.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
         if(MainGame.getScore() > Menu.getHighscore()) {
             try {
                 PrintWriter writer = new PrintWriter("src/main/resources/menu/highscore.txt");
@@ -201,19 +184,19 @@ public class Map {
                 writer.print(MainGame.getScore());
                 writer.close();
             } catch (FileNotFoundException e) {
-                System.out.println(e);
+                e.printStackTrace();
             }
         }
         if (time != 0) {
-            graphicsContext.fillText("Time: " + String.valueOf((time--) / 60), 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
+            graphicsContext.fillText("Time: " + (time--) / 60, 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
         } else {
-            graphicsContext.fillText("Time: " + String.valueOf(time), 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
+            graphicsContext.fillText("Time: " + time, 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
             MainGame.setBackToMenu(true);
         }
-        graphicsContext.fillText("Stage: " + String.valueOf(levelNumber), 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
-        graphicsContext.fillText("Life: " + String.valueOf(player.getLife()), 10.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
-        if(player.getLife() == 0) {
-            MainGame.setBackToMenu(true);
+        graphicsContext.fillText("Stage: " + levelNumber, 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
+        if (player != null) {
+            graphicsContext.fillText("Life: " + player.getLife(), 10.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
+            if(player.getLife() == 0) MainGame.setBackToMenu(true);
         }
     }
 
@@ -225,32 +208,26 @@ public class Map {
             renderX = Math.max(0, renderX - player.getTimeRevival());
             renderY = Math.max(0, renderY - player.getTimeRevival());
         }
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                tiles[i][j].render(graphicsContext);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (tiles[i][j] != null) tiles[i][j].render(graphicsContext);
             }
         }
-        enemies.forEach(enemy -> {
-            enemy.render(graphicsContext);
-        });
-        player.render(graphicsContext);
-
+        enemies.forEach(enemy -> enemy.render(graphicsContext));
+        if (player != null) player.render(graphicsContext);
     }
 
     private void updateRenderXY() {
+        if (player == null) return;
         renderX = player.getPixelX() - (WIDTH_SCREEN / 2) * SCALED_SIZE;
         renderY = player.getPixelY() - (HEIGHT_SCREEN / 2) * SCALED_SIZE;
-        if (renderX < 0) {
-            renderX = 0;
+        if (renderX < 0) renderX = 0;
+        if (renderX > this.width * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE) {
+            renderX = this.width * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE;
         }
-        if (renderX > WIDTH * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE) {
-            renderX = WIDTH * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE;
-        }
-        if (renderY < 0) {
-            renderY = 0;
-        }
-        if (renderY > HEIGHT * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE) {
-            renderY = HEIGHT * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE;
+        if (renderY < 0) renderY = 0;
+        if (renderY > this.height * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE) {
+            renderY = this.height * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE;
         }
     }
 
@@ -260,74 +237,57 @@ public class Map {
             return;
         }
         updateRenderXY();
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                tiles[i][j].render(graphicsContext);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (tiles[i][j] != null) tiles[i][j].render(graphicsContext);
             }
         }
-        enemies.forEach(enemy -> {
-            enemy.render(graphicsContext);
-        });
-        player.render(graphicsContext);
-        bombs.forEach(bomb -> {
-            bomb.render(graphicsContext);
-        });
-        flames.forEach(flame -> {
-            flame.render(graphicsContext);
-        });
-        items.forEach(item -> {
-            item.render(graphicsContext);
-        });
-        scores.forEach(score -> {
-            score.render(graphicsContext);
-        });
+        enemies.forEach(enemy -> enemy.render(graphicsContext));
+        if (player != null) player.render(graphicsContext);
+        bombs.forEach(bomb -> bomb.render(graphicsContext));
+        flames.forEach(flame -> flame.render(graphicsContext));
+        items.forEach(item -> item.render(graphicsContext));
+        scores.forEach(score -> score.render(graphicsContext));
     }
 
     public void setTile(int x, int y, Entity entity) {
-        tiles[x][y] = entity;
+        if (x >= 0 && x < height && y >= 0 && y < width) {
+            tiles[x][y] = entity;
+        }
     }
 
     public Entity getTile(int x, int y) {
-        return tiles[y][x];
+        // [SỬA LỖI 2] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall'
+        if (y < 0 || y >= height || x < 0 || x >= width) {
+            return new Wall(x, y, wall);
+        }
+
+        Entity tile = tiles[y][x];
+
+        // [SỬA LỖI 3] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall'
+        if (tile == null) {
+            return new Wall(x, y, wall);
+        }
+
+        return tile;
     }
 
     public ArrayList<Wall> getWalls() {
         ArrayList<Wall> walls = new ArrayList<>();
-        walls.add((Wall) getTile(1, 0));
-        walls.add((Wall) getTile(2, 0));
-        walls.add((Wall) getTile(3, 0));
+        if (getTile(1, 0) instanceof Wall) walls.add((Wall) getTile(1, 0));
+        if (getTile(2, 0) instanceof Wall) walls.add((Wall) getTile(2, 0));
+        if (getTile(3, 0) instanceof Wall) walls.add((Wall) getTile(3, 0));
         return walls;
     }
 
-    public Bomber getPlayer() {
-        return this.player;
-    }
-
-    public ArrayList<Bomb> getBombs() {
-        return bombs;
-    }
-
-    public ArrayList<Flame> getFlames() {
-        return flames;
-    }
-
-    public ArrayList<Item> getItems() {
-        return items;
-    }
-
-    public int getRenderX() {
-        return renderX;
-    }
-
-    public int getRenderY() {
-        return renderY;
-    }
-
-    public void setRevival(boolean revival) {
-        this.revival = revival;
-    }
-
-    public static int getLevelNumber() {
-        return levelNumber;
-    }
+    public Bomber getPlayer() { return this.player; }
+    public ArrayList<Bomb> getBombs() { return bombs; }
+    public ArrayList<Flame> getFlames() { return flames; }
+    public ArrayList<Item> getItems() { return items; }
+    public int getRenderX() { return renderX; }
+    public int getRenderY() { return renderY; }
+    public void setRevival(boolean revival) { this.revival = revival; }
+    public static int getLevelNumber() { return levelNumber; }
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
 }

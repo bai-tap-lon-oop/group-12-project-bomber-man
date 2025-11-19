@@ -101,7 +101,7 @@ public class MainGame extends Application {
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
                         try {
-                            map.createMap(MAP_URLS[0]);
+                            map.createMap("src/main/resources/levels/Level3.txt");
                             map.resetNumber();
                         } catch (FileNotFoundException e) {
                             System.out.println(e);
