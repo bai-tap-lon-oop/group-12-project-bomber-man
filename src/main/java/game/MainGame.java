@@ -121,7 +121,7 @@ public class MainGame extends Application {
                             String code = keyEvent.getCode().toString();
                             KeyInput.keyInput.put(code, false);
                         });
-                        if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
+                        if((backToMenu && !win) || (countdown != 160 && !win)) {
                             if(countdown == 160) {
                                 Sound.game_over.play();
                                 stage.setScene(scene2);
@@ -130,7 +130,7 @@ public class MainGame extends Application {
                             menu.renderMessage('o', gameMenuContext);
                             countdown--;
                         }
-                        if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
+                        if((backToMenu && win) || (countdown != 160 && win)) {
                             if(countdown == 160) {
                                 Sound.level_complete.play();
                                 stage.setScene(scene2);

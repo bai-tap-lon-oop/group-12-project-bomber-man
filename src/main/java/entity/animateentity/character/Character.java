@@ -1,5 +1,6 @@
 package entity.animateentity.character;
 
+import com.sun.tools.javac.Main;
 import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.character.enemy.Enemy;
@@ -112,7 +113,12 @@ public abstract class Character extends AnimateEntity {
     public void update() {
         if (isDestroyed()) {
             updateDestroyAnimation();
-        } else {
+        }
+        else if (pixelX < 0 || pixelY < 0) {
+            MainGame.setWin(true);
+            MainGame.setBackToMenu(true);
+        }
+        else {
             for (int i = 0; i < speed; i++) {
                 setDirection();
                 checkCollision();

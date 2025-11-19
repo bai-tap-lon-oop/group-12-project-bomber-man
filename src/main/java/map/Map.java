@@ -8,6 +8,8 @@ import entity.animateentity.Flame;
 import entity.Entity;;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
+import entity.staticentity.StaticEntity;
+import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;
 import texture.*;
@@ -281,13 +283,20 @@ public class Map {
         });
     }
 
-
     public void setTile(int x, int y, Entity entity) {
         tiles[x][y] = entity;
     }
 
     public Entity getTile(int x, int y) {
         return tiles[y][x];
+    }
+
+    public ArrayList<Wall> getWalls() {
+        ArrayList<Wall> walls = new ArrayList<>();
+        walls.add((Wall) getTile(1, 0));
+        walls.add((Wall) getTile(2, 0));
+        walls.add((Wall) getTile(3, 0));
+        return walls;
     }
 
     public Bomber getPlayer() {
