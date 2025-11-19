@@ -71,12 +71,18 @@ public class Menu {
     public void renderMessage(char c, GraphicsContext graphicsContext) {
         graphicsContext.drawImage(Background, 0, 0);
         switch (c) {
-            case 's': graphicsContext.fillText("Stage 1", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
-            break;
-            case 'c': graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
-            break;
-            case 'o': graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
-            break;
+            case 's': 
+                graphicsContext.fillText("Start Challenge!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                break;
+            case 'w': 
+                graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                break;
+            case 'l': 
+                graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
+                break;
+            case 'v': 
+                graphicsContext.fillText("You Win!!", SCALED_SIZE * 5.5, SCALED_SIZE * 7.5);
+                break;
         }
     }
 

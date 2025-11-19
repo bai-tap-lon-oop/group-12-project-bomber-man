@@ -1,6 +1,5 @@
 package game;
 
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -89,7 +88,7 @@ public class MainGame extends Application {
         // ===== KHỞI TẠO MENU VÀ ÂM THANH =====
         menu.createMenu();
         Sound.menu_sound.play();
-        Sound.menu_sound.loop();  // Lặp nhạc menu
+        Sound.menu_sound.loop();
 
         countdown = 160; // Countdown cho hiệu ứng chuyển cảnh
 
@@ -99,18 +98,20 @@ public class MainGame extends Application {
             public void handle(long currentTime) {
                 long now = currentTime - startTime; // Thời gian hiện tại tính từ lúc bắt đầu
 
-                // ===== XỬ LÝ MENU =====
                 if (!choseStart || backToMenu) {
                     menu.setStart(false);
                     menu.renderMenu(gameMenuContext);
+                    
                     scene2.setOnKeyPressed(keyEvent -> {
                         String code = keyEvent.getCode().toString();
                         KeyInput.keyInput.put(code, true);
                     });
+
                     scene2.setOnKeyReleased(keyEvent -> {
                         String code = keyEvent.getCode().toString();
                         KeyInput.keyInput.put(code, false);
                     });
+
                     if(menu.isStart() || countdown != 160) {
                         if(countdown == 160) {
                             Sound.level_start.play();
@@ -118,6 +119,7 @@ public class MainGame extends Application {
                         countdown--;
                         menu.renderMessage('s', gameMenuContext);
                     }
+                    // Khi countdown = 0 -> bắt đầu game
                     if (countdown == 0) {
                         countdown = 160;
                         backToMenu = false;
@@ -200,7 +202,7 @@ public class MainGame extends Application {
                             KeyInput.keyInput.put(code, false);
                         });
 
-                        // ===== XỚ LÝ GAME OVER =====
+                        // ===== XỬ LÝ GAME OVER =====
                         // Nếu quay về menu và không thắng (thua)
                         if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
                             if(countdown == 160) {
@@ -208,11 +210,11 @@ public class MainGame extends Application {
                                 stage.setScene(scene2);      // Chuyển sang menu
                             }
                             backToMenu = false;
-                            menu.renderMessage('o', gameMenuContext);  // Hiển "Game Over"
+                            menu.renderMessage('l', gameMenuContext);  // Hiển "Game Over"
                             countdown--;
                         }
 
-                        // ===== XỚ LÝ THẮNG =====
+                        // ===== XỬ LÝ WIN =====
                         // Nếu quay về menu và thắng
                         if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
                             if(countdown == 160) {
@@ -220,7 +222,12 @@ public class MainGame extends Application {
                                 stage.setScene(scene2);      // Chuyển sang menu
                             }
                             backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext);  // Hiển "Victory"
+                            // Kiểm tra nếu là level cuối thì hiển thị Victory, không thì hiển thị Complete
+                            if (Map.getLevelNumber() >= MAP_URLS.length) {
+                                menu.renderMessage('v', gameMenuContext);  // Hiển thị "Victory" khi hết level
+                            } else {
+                                menu.renderMessage('w', gameMenuContext);  // Hiển thị "Level Completed"
+                            }
                             countdown--;
                         }
 
@@ -243,11 +250,11 @@ public class MainGame extends Application {
                             } else {
                                 // Hết level hoặc thua -> quay về menu
                                 choseStart = false;
+                                backToMenu = true;
+                                win = false;  
                                 Sound.stage_sound.stop();     // Dừng nhạc stage
                                 Sound.menu_sound.play();      // Phát nhạc menu
                                 Sound.menu_sound.loop();
-                                backToMenu = true;
-                                win = false;                  // Reset trạng thái thắng
                             }
                         }
 
