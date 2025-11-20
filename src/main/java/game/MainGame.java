@@ -33,7 +33,7 @@ public class MainGame extends Application {
     private Canvas gameMenu;
     private final double FPS = 120.0;
     private int countdown;
-    private int currentLevel = 0;
+    public static int currentLevel = 0;
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;

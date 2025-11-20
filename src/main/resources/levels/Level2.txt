@@ -13,31 +13,16 @@
 #     1     *   *  *   5      #
 ###############################
 
-Mô tả cấu trúc tệp cấu hình màn chơi:
-1/ Dòng đầu tiên bao gồm 3 số nguyên L, R, C:
-L - số thứ tự màn chơi
-R - số hàng của bản đồ
-C - số cột của bản đồ
+note:
++ Khi ông thêm level thì chỗ path này ông cũng thêm theo nhé
+            Ví dụ có 3 level thì ông thêm
+            Variables.class.getResource("/levels/Level2.txt").getPath()
++ Để đơn giản thì level nào cũng là 13 dọc và 31 ngang nhé
 
-2/ R dòng tiếp theo, mỗi dòng có C kí tự. Mỗi kí tự đại diện cho một đối tượng trên bản đồ:
-Tiles:
-# - Wall
-* - Brick
-x - Portal
-y - Coin
-z - Switch
-
-Character:
-p - Bomber
-1 - Balloon
-2 - Oneal
-3 - Doll
-4 - Minvo
-5 - Kondoria
-
-Items:
-b - Bomb Item
-f - Flame Item
-s - Speed Item
-
-Kí tự khác các kí tự trên - Grass
++ Trong thư mục variables
+public static final String[] MAP_URLS = {
+      Variables.class.getResource("/levels/Level1.txt").getPath(),
+      Variables.class.getResource("/levels/Level2.txt").getPath(),
+      Variables.class.getResource("/levels/Level3.txt").getPath(),
+      .. thêm đường dẫn
+};
