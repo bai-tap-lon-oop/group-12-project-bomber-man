@@ -96,7 +96,7 @@ public class MainGame extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long currentTime) {
-                long now = currentTime - startTime; // Thời gian hiện tại tính từ lúc bắt đầu
+                long now = currentTime - startTime;
 
                 if (!choseStart || backToMenu) {
                     menu.setStart(false);
@@ -119,7 +119,6 @@ public class MainGame extends Application {
                         countdown--;
                         menu.renderMessage('s', gameMenuContext);
                     }
-                    // Khi countdown = 0 -> bắt đầu game
                     if (countdown == 0) {
                         countdown = 160;
                         backToMenu = false;
@@ -136,39 +135,23 @@ public class MainGame extends Application {
                     }
                 } else {
                     // ===== GAME LOOP CHÍNH =====
-                    // Kiểm tra đủ thời gian cho frame tiếp theo (giới hạn FPS)
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
 
                         // ===== XỬ LÝ PAUSE MENU =====
                         if (paused) {
-                            // Render game ở background (frozen)
-                            map.renderMap(graphicsContext);
-                            map.renderTopInfo(topInfoContext);
+                            menu.renderPauseMenu(gameMenuContext);
 
-                            // Vẽ overlay tối
-                            gameMenuContext.setFill(Color.rgb(0, 0, 0, 0.7));
-                            gameMenuContext.fillRect(0, 0, WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
-
-                            // Hiển thị PAUSED text
-                            gameMenuContext.setFill(Color.WHITE);
-                            gameMenuContext.fillText("PAUSED", SCALED_SIZE * 5.5, SCALED_SIZE * 6);
-                            gameMenuContext.fillText("Press ESC to Resume", SCALED_SIZE * 3, SCALED_SIZE * 7);
-                            gameMenuContext.fillText("Press Q to Quit", SCALED_SIZE * 3.5, SCALED_SIZE * 8);
-
-                            // Chuyển sang pause scene
                             if (stage.getScene() != scene2) {
                                 stage.setScene(scene2);
                             }
 
-                            // Handle input trong pause
                             scene2.setOnKeyPressed(keyEvent -> {
                                 String code = keyEvent.getCode().toString();
                                 if (code.equals("ESCAPE")) {
                                     paused = false;
                                     stage.setScene(scene);
                                 } else if (code.equals("Q")) {
-                                    // Quit to menu
                                     paused = false;
                                     backToMenu = true;
                                     choseStart = false;
@@ -180,12 +163,10 @@ public class MainGame extends Application {
                             return;  // Skip game update khi pause
                         }
 
-                        // Cập nhật và render game (khi không pause)
-                        map.updateMap();                        // Update tất cả entities
-                        map.renderMap(graphicsContext);         // Render map và entities
-                        map.renderTopInfo(topInfoContext);      // Render thông tin trên
+                        map.updateMap();          
+                        map.renderMap(graphicsContext);       
+                        map.renderTopInfo(topInfoContext);   
 
-                        // Xử lý input cho game
                         scene.setOnKeyPressed(keyEvent -> {
                             String code = keyEvent.getCode().toString();
 
@@ -202,12 +183,11 @@ public class MainGame extends Application {
                             KeyInput.keyInput.put(code, false);
                         });
 
-                        // ===== XỬ LÝ GAME OVER =====
-                        // Nếu quay về menu và không thắng (thua)
+                        // ===== XỬ LÝ LOSE =====
                         if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
                             if(countdown == 160) {
-                                Sound.game_over.play();      // Phát âm thanh thua
-                                stage.setScene(scene2);      // Chuyển sang menu
+                                Sound.game_over.play();  
+                                stage.setScene(scene2); 
                             }
                             backToMenu = false;
                             menu.renderMessage('l', gameMenuContext);  // Hiển "Game Over"
@@ -215,18 +195,16 @@ public class MainGame extends Application {
                         }
 
                         // ===== XỬ LÝ WIN =====
-                        // Nếu quay về menu và thắng
                         if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
                             if(countdown == 160) {
-                                Sound.level_complete.play(); // Phát âm thanh thắng
-                                stage.setScene(scene2);      // Chuyển sang menu
+                                Sound.level_complete.play();
+                                stage.setScene(scene2); 
                             }
                             backToMenu = false;
-                            // Kiểm tra nếu là level cuối thì hiển thị Victory, không thì hiển thị Complete
                             if (Map.getLevelNumber() >= MAP_URLS.length) {
-                                menu.renderMessage('v', gameMenuContext);  // Hiển thị "Victory" khi hết level
+                                menu.renderMessage('v', gameMenuContext); 
                             } else {
-                                menu.renderMessage('w', gameMenuContext);  // Hiển thị "Level Completed"
+                                menu.renderMessage('w', gameMenuContext);  
                             }
                             countdown--;
                         }
@@ -234,7 +212,6 @@ public class MainGame extends Application {
                         // Khi countdown = 0 -> kiểm tra level tiếp theo
                         if (countdown == 0) {
                             countdown = 160;
-                            // Nếu thắng và còn level tiếp theo
                             if (win == true && Map.getLevelNumber() < MAP_URLS.length) {
                                 // Load level tiếp theo
                                 win = false;
@@ -248,12 +225,11 @@ public class MainGame extends Application {
                                     System.out.println(e);
                                 }
                             } else {
-                                // Hết level hoặc thua -> quay về menu
                                 choseStart = false;
                                 backToMenu = true;
                                 win = false;  
-                                Sound.stage_sound.stop();     // Dừng nhạc stage
-                                Sound.menu_sound.play();      // Phát nhạc menu
+                                Sound.stage_sound.stop(); 
+                                Sound.menu_sound.play();    
                                 Sound.menu_sound.loop();
                             }
                         }
@@ -262,14 +238,12 @@ public class MainGame extends Application {
                 }
 
                 // ===== TÍNH FPS THỰC TẾ =====
-                frames++;  // Tăng bộ đếm frame
-
-                // Mỗi 1 giây (1,000,000,000 nano giây)
+                frames++; 
                 if (now - lastTime >= 1000000000) {
                     // Hiển thị FPS trên title bar
                     stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
-                    frames = 0;      // Reset bộ đếm
-                    lastTime = now;  // Cập nhật lastTime
+                    frames = 0;    
+                    lastTime = now; 
                 }
 
                 // Cập nhật biến time cho animation (chia 60 triệu để chuyển từ nano sang đơn vị phù hợp)
@@ -297,5 +271,7 @@ public class MainGame extends Application {
         }
     }
 
-    public static void setWin(boolean win) {MainGame.win = win;}
+    public static void setWin(boolean win) {
+        MainGame.win = win;
+    }
 }
