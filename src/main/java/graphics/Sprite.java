@@ -10,12 +10,17 @@ public class Sprite {
     public static final int DEFAULT_SIZE = 16;
     public static final int SCALED_SIZE = DEFAULT_SIZE * 2;
     private static final int TRANSPARENT_COLOR = 0xffff00ff;
+
     public final int SIZE;
     private int _x, _y;
     public int[] _pixels;
     protected int _realWidth;
     protected int _realHeight;
     private SpriteSheet _sheet;
+
+    // [FIX LAG] Biến dùng để lưu ảnh đã xử lý (Cache)
+    // Giúp không phải tính toán lại mỗi khung hình
+    private Image _image = null;
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +50,6 @@ public class Sprite {
             new Sprite(DEFAULT_SIZE, 3, 1, SpriteSheet.tiles, 13, 16),
             new Sprite(DEFAULT_SIZE, 3, 2, SpriteSheet.tiles, 13, 16),
     };
-
 
     public static Sprite[] PLAYER_UP = {
             new Sprite(DEFAULT_SIZE, 0, 0, SpriteSheet.tiles, 13, 16),
@@ -312,7 +316,13 @@ public class Sprite {
         return _pixels[i];
     }
 
+    // [QUAN TRỌNG] Hàm này đã được sửa để Cache ảnh
     public Image getFxImage() {
+        // Nếu đã có ảnh rồi thì trả về luôn, không tính lại
+        if (_image != null) {
+            return _image;
+        }
+
         WritableImage wr = new WritableImage(SIZE, SIZE);
         PixelWriter pw = wr.getPixelWriter();
         for (int x = 0; x < SIZE; x++) {
@@ -324,8 +334,10 @@ public class Sprite {
                 }
             }
         }
-        Image input = new ImageView(wr).getImage();
-        return resample(input, SCALED_SIZE / DEFAULT_SIZE);
+
+        // Lưu kết quả vào cache để dùng cho lần sau
+        _image = resample(wr, SCALED_SIZE / DEFAULT_SIZE);
+        return _image;
     }
 
     private Image resample(Image input, int scaleFactor) {
@@ -344,7 +356,6 @@ public class Sprite {
         for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
                 int argb = reader.getArgb(x, y);
-                // Ensure transparent pixels stay transparent
                 if ((argb & 0xFF000000) == 0) {
                     argb = 0x00000000;
                 }
@@ -367,5 +378,4 @@ public class Sprite {
     public int getRealHeight() {
         return _realHeight;
     }
-
 }

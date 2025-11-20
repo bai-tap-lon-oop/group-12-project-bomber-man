@@ -7,9 +7,6 @@ import map.Map;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.enemy.Enemy;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import static variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 import static variables.Variables.dx;
@@ -21,124 +18,121 @@ public abstract class Path {
     protected Bomber player;
     protected Enemy enemy;
 
-    private class Vertex {
-        int x;
-        int y;
-        int value;
-
-        Vertex(int x, int y, int value) {
-            this.x = x;
-            this.y = y;
-            this.value = value;
-        }
-    }
+    // [SIÊU TỐI ƯU] Dùng mảng 1 chiều làm hàng đợi (Queue) thay vì Object
+    // Giúp loại bỏ hoàn toàn việc dọn rác bộ nhớ (Garbage Collection)
+    private int[] qX;
+    private int[] qY;
+    private int[][] dist;
+    private boolean[][] visited;
 
     public Path(Map map, Bomber player, Enemy enemy) {
         this.map = map;
         this.player = player;
         this.enemy = enemy;
+        initArrays();
     }
 
-    // [SỬA] Sử dụng kích thước động từ Map thay vì biến tĩnh HEIGHT/WIDTH
+    private void initArrays() {
+        int h = Math.max(1, map.getHeight());
+        int w = Math.max(1, map.getWidth());
+        // Queue tối đa bằng kích thước map
+        qX = new int[h * w + 1];
+        qY = new int[h * w + 1];
+        dist = new int[h][w];
+        visited = new boolean[h][w];
+    }
+
     private boolean isValid(int x, int y) {
         return (x >= 0 && x < map.getHeight() && y >= 0 && y < map.getWidth());
     }
 
     public int Distance(int x1, int y1, int x2, int y2, boolean dodge) {
-        // Lấy kích thước thực tế của map hiện tại
-        int currentHeight = map.getHeight();
-        int currentWidth = map.getWidth();
+        // 1. Kiểm tra nhanh khoảng cách (Manhattan)
+        // Nếu xa quá 6 ô thì nghỉ khỏe, khỏi tính -> Tăng FPS cực mạnh
+        if (Math.abs(x1 - x2) + Math.abs(y1 - y2) > 6) return INF;
 
-        // Kiểm tra tọa độ đích có hợp lệ không trước khi gọi getTile để tránh lỗi
-        if (!isValid(x2, y2) || !isValid(x1, y1)) {
-            return INF;
-        }
+        int h = map.getHeight();
+        int w = map.getWidth();
 
-        // Lưu ý: Hàm getTile(x, y) trong Map nhận (col, row).
-        // Trong file Path này, x đang được dùng làm row, y làm col (theo logic mảng 2D [x][y]).
-        // Cần chú ý thứ tự tham số truyền vào map.getTile().
+        // Resize nếu cần
+        if (dist.length != h || dist[0].length != w) initArrays();
 
-        if (map.getTile(y2, x2).isBlock()) {
-            return INF;
-        }
-        if (map.getTile(y1, x1).isBlock()) {
-            if (dodge) {
-                if (map.getTile(y1, x1) instanceof Wall) {
-                    return INF;
-                }
-            } else {
-                return INF;
+        if (!isValid(x2, y2) || !isValid(x1, y1)) return INF;
+        if (map.getTile(y2, x2).isBlock()) return INF;
+
+        // 2. Reset mảng (Nhanh hơn tạo mới)
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                dist[i][j] = INF;
+                visited[i][j] = false;
             }
         }
 
-        // [SỬA] Khởi tạo mảng theo kích thước động
-        int[][] statusTiles = new int[currentHeight][currentWidth];
-        int[][] distanceTiles = new int[currentHeight][currentWidth];
+        // Đánh dấu vật cản
+        // (Lưu ý: Ta tích hợp kiểm tra vật cản ngay trong lúc duyệt BFS để đỡ phải loop 2 lần)
 
-        // [SỬA] Vòng lặp theo kích thước động
-        for (int i = 0; i < currentHeight; i++) {
-            for (int j = 0; j < currentWidth; j++) {
-                distanceTiles[i][j] = INF;
-                // map.getTile(col, row) -> map.getTile(j, i)
-                Entity tile = map.getTile(j, i);
+        // 3. BFS dùng mảng (Array Queue)
+        int head = 0;
+        int tail = 0;
 
-                // Bảo vệ thêm 1 lớp nữa nếu tile null (dù Map đã fix nhưng cẩn thận không thừa)
-                if (tile == null) {
-                    statusTiles[i][j] = 0; // Coi như đi được nếu lỗi
-                    continue;
-                }
+        // Push điểm bắt đầu
+        qX[tail] = x1;
+        qY[tail] = y1;
+        tail++;
+        dist[x1][y1] = 0;
+        visited[x1][y1] = true;
 
-                if (tile.isBlock()) {
-                    statusTiles[i][j] = 1;
-                    if (dodge && !(tile instanceof Wall)) {
-                        statusTiles[i][j] = 0;
-                    }
-                } else {
-                    statusTiles[i][j] = 0;
-                }
-            }
-        }
+        while (head < tail) {
+            int ux = qX[head];
+            int uy = qY[head];
+            head++;
 
-        for (Bomb bomb : map.getBombs()) {
-            // Đảm bảo bomb nằm trong map mới đánh dấu
-            if (isValid(bomb.getTileY(), bomb.getTileX())) {
-                statusTiles[bomb.getTileY()][bomb.getTileX()] = 1;
-            }
-        }
+            // Tìm thấy đích
+            if (ux == x2 && uy == y2) return dist[ux][uy];
 
-        Queue<Vertex> pq = new LinkedList<>();
-        pq.add(new Vertex(x1, y1, 0));
-        distanceTiles[x1][y1] = 0;
+            // Nếu đi quá sâu (quá 10 bước) thì dừng để tiết kiệm CPU
+            if (dist[ux][uy] > 10) continue;
 
-        while (!pq.isEmpty()) {
-            Vertex cur = pq.poll();
             for (int k = 0; k < 4; k++) {
-                int _x = cur.x + dx[k];
-                int _y = cur.y + dy[k];
+                int vx = ux + dx[k];
+                int vy = uy + dy[k];
 
-                // isValid đã được sửa ở trên để dùng map.getHeight/Width
-                if (isValid(_x, _y) && statusTiles[_x][_y] == 0 && distanceTiles[_x][_y] == INF) {
-                    distanceTiles[_x][_y] = cur.value + 1;
-                    pq.add(new Vertex(_x, _y, cur.value + 1));
+                if (isValid(vx, vy) && !visited[vx][vy]) {
+                    // Kiểm tra vật cản trực tiếp ở đây
+                    boolean isBlocked = false;
+                    Entity tile = map.getTile(vy, vx); // Lưu ý map.getTile(col, row)
+
+                    if (tile != null && tile.isBlock()) {
+                        isBlocked = true;
+                        if (dodge && !(tile instanceof Wall)) isBlocked = false;
+                    }
+
+                    // Kiểm tra bom
+                    if (!isBlocked) {
+                        for (Bomb b : map.getBombs()) {
+                            if (b.getTileX() == vy && b.getTileY() == vx) {
+                                isBlocked = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isBlocked) {
+                        dist[vx][vy] = dist[ux][uy] + 1;
+                        visited[vx][vy] = true;
+                        qX[tail] = vx;
+                        qY[tail] = vy;
+                        tail++;
+                    }
                 }
             }
         }
-        return distanceTiles[x2][y2];
+
+        return INF;
     }
 
     public DIRECTION intToDirection(int x) {
-        switch (x) {
-            case 0:
-                return UP;
-            case 1:
-                return DOWN;
-            case 2:
-                return LEFT;
-            case 3:
-                return RIGHT;
-            default:
-                return NONE;
-        }
+        switch (x) { case 0: return UP; case 1: return DOWN; case 2: return LEFT; case 3: return RIGHT; default: return NONE; }
     }
 
     public abstract DIRECTION path();

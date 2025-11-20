@@ -33,6 +33,7 @@ public class MainGame extends Application {
     private Canvas topInfo;
     private Canvas gameMenu;
 
+    // [OPTIMIZE] Có thể giảm xuống 60.0 nếu máy yếu, nhưng 120.0 vẫn ổn nếu thuật toán AI đã sửa
     private final double FPS = 120.0;
     private int countdown;
     private final long timePerFrame = (long) (1000000000 / FPS);
@@ -71,12 +72,15 @@ public class MainGame extends Application {
         VBox root2 = new VBox(gameMenu);
         Scene scene2 = new Scene(root2);
 
+        // [QUAN TRỌNG] Cài đặt Input 1 lần duy nhất ở đây (Không đặt trong vòng lặp)
+        setupInput(scene, scene2);
+
         stage.setScene(scene2);
         stage.setResizable(false);
         try {
-            stage.getIcons().add(new Image("/icon.png")); // Cần đảm bảo file icon tồn tại để ko lỗi
+            stage.getIcons().add(new Image("/icon.png"));
         } catch (Exception e) {
-            System.out.println("Icon not found");
+            // Ignore if icon missing
         }
         stage.show();
 
@@ -96,84 +100,13 @@ public class MainGame extends Application {
 
                 // --- LOGIC MENU HOẶC CHUYỂN CẢNH ---
                 if (!choseStart || backToMenu) {
-                    menu.setStart(false);
-                    menu.renderMenu(gameMenuContext);
-
-                    scene2.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
-                    scene2.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
-
-                    if(menu.isStart() || countdown != 160) {
-                        if(countdown == 160) {
-                            Sound.level_start.play();
-                        }
-                        countdown--;
-                        menu.renderMessage('s', gameMenuContext);
-                    }
-
-                    // BẮT ĐẦU GAME
-                    if (countdown == 0) {
-                        countdown = 160;
-                        backToMenu = false;
-                        choseStart = true;
-                        win = false; // Reset trạng thái thắng khi chơi lại
-
-                        Sound.stage_sound.play();
-                        Sound.stage_sound.loop();
-                        stage.setScene(scene);
-
-                        // [ĐÃ SỬA] Code gọn gàng hơn, gọi loadLevel(0)
-                        try {
-                            Map.getGameMap().loadLevel(0);
-                            map.resetNumber();
-                            score = 0; // Reset điểm khi chơi mới
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    handleMenuLogic(stage, scene);
                 }
                 // --- LOGIC TRONG GAME ---
                 else {
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
-                        map.updateMap();
-                        map.renderMap(graphicsContext);
-                        map.renderTopInfo(topInfoContext);
-
-                        scene.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
-                        scene.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
-
-                        // Xử lý khi THUA (Game Over)
-                        if((backToMenu && !win) || (countdown != 160 && !win)) {
-                            if(countdown == 160) {
-                                Sound.game_over.play();
-                                stage.setScene(scene2);
-                            }
-                            backToMenu = false;
-                            menu.renderMessage('o', gameMenuContext); // 'o' = Game Over
-                            countdown--;
-                        }
-
-                        // Xử lý khi THẮNG (Victory / Level Complete)
-                        if((backToMenu && win) || (countdown != 160 && win)) {
-                            if(countdown == 160) {
-                                Sound.level_complete.play();
-                                stage.setScene(scene2);
-                            }
-                            backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext); // 'c' = Complete
-                            countdown--;
-                        }
-
-                        // Quay về Menu chính sau khi hiện thông báo xong
-                        if (countdown == 0) {
-                            countdown = 160;
-                            choseStart = false;
-                            Sound.stage_sound.stop();
-                            Sound.menu_sound.play();
-                            Sound.menu_sound.loop();
-                            backToMenu = true;
-                            win = false;
-                        }
+                        handleGameLogic(stage, scene2);
                     }
                 }
 
@@ -190,6 +123,92 @@ public class MainGame extends Application {
         timer.start();
     }
 
+    // [HÀM MỚI] Tách phần xử lý Input ra ngoài cho gọn và tối ưu
+    private void setupInput(Scene gameScene, Scene menuScene) {
+        // Input cho Menu
+        menuScene.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
+        menuScene.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
+
+        // Input cho Game
+        gameScene.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
+        gameScene.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
+    }
+
+    // [HÀM MỚI] Tách logic Menu
+    private void handleMenuLogic(Stage stage, Scene gameScene) {
+        menu.setStart(false);
+        menu.renderMenu(gameMenuContext);
+
+        if (menu.isStart() || countdown != 160) {
+            if (countdown == 160) {
+                Sound.level_start.play();
+            }
+            countdown--;
+            menu.renderMessage('s', gameMenuContext);
+        }
+
+        // BẮT ĐẦU GAME
+        if (countdown == 0) {
+            countdown = 160;
+            backToMenu = false;
+            choseStart = true;
+            win = false;
+
+            Sound.stage_sound.play();
+            Sound.stage_sound.loop();
+            stage.setScene(gameScene);
+
+            try {
+                // Load Level 1 (index 0)
+                Map.getGameMap().loadLevel(0);
+                map.resetNumber();
+                score = 0;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // [HÀM MỚI] Tách logic Game Loop
+    private void handleGameLogic(Stage stage, Scene menuScene) {
+        map.updateMap();
+        map.renderMap(graphicsContext);
+        map.renderTopInfo(topInfoContext);
+
+        // Xử lý khi THUA (Game Over)
+        if ((backToMenu && !win) || (countdown != 160 && !win)) {
+            if (countdown == 160) {
+                Sound.game_over.play();
+                stage.setScene(menuScene);
+            }
+            backToMenu = false;
+            menu.renderMessage('o', gameMenuContext);
+            countdown--;
+        }
+
+        // Xử lý khi THẮNG TOÀN BỘ GAME (Victory)
+        if ((backToMenu && win) || (countdown != 160 && win)) {
+            if (countdown == 160) {
+                Sound.level_complete.play();
+                stage.setScene(menuScene);
+            }
+            backToMenu = false;
+            menu.renderMessage('c', gameMenuContext);
+            countdown--;
+        }
+
+        // Quay về Menu chính sau khi đếm ngược xong
+        if (countdown == 0) {
+            countdown = 160;
+            choseStart = false;
+            Sound.stage_sound.stop();
+            Sound.menu_sound.play();
+            Sound.menu_sound.loop();
+            backToMenu = true;
+            win = false;
+        }
+    }
+
     public static void main(String[] args) {
         launch();
     }
@@ -204,8 +223,8 @@ public class MainGame extends Application {
 
     public static void setBackToMenu(boolean backToMenu) {
         MainGame.backToMenu = backToMenu;
-        // Xóa bom thừa nếu có để tránh lỗi khi vào lại
-        if (map.getBombs().size() > 0) {
+        // Xóa sạch bom khi về menu để tránh lỗi
+        if (map.getBombs() != null && map.getBombs().size() > 0) {
             map.getBombs().clear();
         }
     }
