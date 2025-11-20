@@ -33,6 +33,7 @@ public class MainGame extends Application {
     private Canvas gameMenu;
     private final double FPS = 120.0;
     private int countdown;
+    private int currentLevel = 0;
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;
@@ -99,10 +100,11 @@ public class MainGame extends Application {
                         choseStart = true;
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
-                        stage.setScene(scene);
                         try {
-                            map.createMap(MAP_URLS[0]);
+                            currentLevel = 0;
+                            map.createMap(MAP_URLS[currentLevel]);
                             map.resetNumber();
+                            stage.setScene(scene);
                         } catch (FileNotFoundException e) {
                             System.out.println(e);
                         }
@@ -121,7 +123,8 @@ public class MainGame extends Application {
                             String code = keyEvent.getCode().toString();
                             KeyInput.keyInput.put(code, false);
                         });
-                        if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
+
+                        if((backToMenu && !win) || (countdown != 160 && !win)) {
                             if(countdown == 160) {
                                 Sound.game_over.play();
                                 stage.setScene(scene2);
@@ -130,7 +133,7 @@ public class MainGame extends Application {
                             menu.renderMessage('o', gameMenuContext);
                             countdown--;
                         }
-                        if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
+                        if((backToMenu && win) || (countdown != 160 && win)) {
                             if(countdown == 160) {
                                 Sound.level_complete.play();
                                 stage.setScene(scene2);
@@ -139,21 +142,40 @@ public class MainGame extends Application {
                             menu.renderMessage('c', gameMenuContext);
                             countdown--;
                         }
+
                         if (countdown == 0) {
                             countdown = 160;
-                            choseStart = false;
-                            Sound.stage_sound.stop();
-                            Sound.menu_sound.play();
-                            Sound.menu_sound.loop();
-                            backToMenu = true;
-                            win = false;
+                            if (!win) {
+                                choseStart = false;
+                                Sound.stage_sound.stop();
+                                Sound.menu_sound.play();
+                                Sound.menu_sound.loop();
+                                backToMenu = true;
+                                win = false;
+                            } else {
+                                try {
+                                    currentLevel++;
+                                    map.createMap(MAP_URLS[currentLevel]);
+                                    map.resetNumber();
+                                    backToMenu = false;
+                                    win = false;
+                                    stage.setScene(scene);
+                                } catch (Exception e) {
+                                    choseStart = false;
+                                    Sound.stage_sound.stop();
+                                    Sound.menu_sound.play();
+                                    Sound.menu_sound.loop();
+                                    backToMenu = true;
+                                    win = false;
+                                }
+                            }
                         }
-
                     }
                 }
+
                 frames++;
                 if (now - lastTime >= 1000000000) {
-                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");//+ " | LIFES: " + map.getPlayer().getLife());
+                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
                     frames = 0;
                     lastTime = now;
                 }
@@ -166,7 +188,6 @@ public class MainGame extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 
     public static void setNewScore(int enemy_score) {
         MainGame.score = score + enemy_score;

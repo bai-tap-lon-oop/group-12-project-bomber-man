@@ -8,6 +8,8 @@ import entity.animateentity.Flame;
 import entity.Entity;;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
+import entity.staticentity.StaticEntity;
+import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;
 import texture.*;
@@ -162,7 +164,6 @@ public class Map {
         });
     }
 
-
     public void updateMap() {
         if (revival) return;
         for (int i = 0; i < HEIGHT; i++) {
@@ -263,6 +264,9 @@ public class Map {
                 tiles[i][j].render(graphicsContext);
             }
         }
+        items.forEach(item -> {
+            item.render(graphicsContext);
+        });
         enemies.forEach(enemy -> {
             enemy.render(graphicsContext);
         });
@@ -273,14 +277,10 @@ public class Map {
         flames.forEach(flame -> {
             flame.render(graphicsContext);
         });
-        items.forEach(item -> {
-            item.render(graphicsContext);
-        });
         scores.forEach(score -> {
             score.render(graphicsContext);
         });
     }
-
 
     public void setTile(int x, int y, Entity entity) {
         tiles[x][y] = entity;
@@ -288,6 +288,14 @@ public class Map {
 
     public Entity getTile(int x, int y) {
         return tiles[y][x];
+    }
+
+    public ArrayList<Wall> getWalls() {
+        ArrayList<Wall> walls = new ArrayList<>();
+        walls.add((Wall) getTile(1, 0));
+        walls.add((Wall) getTile(2, 0));
+        walls.add((Wall) getTile(3, 0));
+        return walls;
     }
 
     public Bomber getPlayer() {

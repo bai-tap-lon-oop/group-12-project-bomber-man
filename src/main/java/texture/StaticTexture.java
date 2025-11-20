@@ -14,8 +14,12 @@ public class StaticTexture {
                 return new BombItem(j ,i, Sprite.BRICK[0]);
             case 'x':
                 return new Portal(j, i, Sprite.BRICK[0]);
+            case 'y':
+                return new CoinItem(j, i, Sprite.coin);
             case '#':
                 return new Wall(j, i, Sprite.wall);
+            case 'z':
+                return new SwitchItem(j, i, Sprite.key);
             default:
                 return new Grass(j, i, Sprite.grass);
         }

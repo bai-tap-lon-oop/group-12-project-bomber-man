@@ -49,10 +49,10 @@ public class Flame extends AnimateEntity {
             if (entity instanceof SpeedItem) {
                 entity.setSprite(Sprite.powerup_speed);
             }
-            if (entity instanceof BombItem) {
+            else if (entity instanceof BombItem) {
                 entity.setSprite(Sprite.powerup_bombs);
             }
-            if (entity instanceof FlameItem) {
+            else if (entity instanceof FlameItem) {
                 entity.setSprite(Sprite.powerup_flames);
             }
         } else if (entity instanceof Portal) {
