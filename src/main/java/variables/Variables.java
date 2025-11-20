@@ -49,3 +49,4 @@ public class Variables {
             Variables.class.getResource("/fonts/ThaleahFat.ttf").toExternalForm(),
     };
 }
+

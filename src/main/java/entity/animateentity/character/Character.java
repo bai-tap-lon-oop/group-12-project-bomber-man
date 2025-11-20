@@ -113,10 +113,7 @@ public abstract class Character extends AnimateEntity {
     public void update() {
 
         if (this instanceof Bomber) {
-            if (    pixelX < 0 || pixelY < 0 ||
-                    pixelX > WIDTH * WIDTH_SCREEN ||
-                    pixelY > HEIGHT * WIDTH_SCREEN)
-            {
+            if (this.outOfBound()) {
                 MainGame.setBackToMenu(true);
                 MainGame.setWin(true);
                 return;
