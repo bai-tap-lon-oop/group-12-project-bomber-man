@@ -41,19 +41,7 @@ public class Minvo extends Enemy {
 
     public void checkCollision() {
         isCollision = false;
-        pixelX += this.velocityX;
-        pixelY += this.velocityY;
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                Entity entity = map.getTile(j, i);
-                if (entity.isBlock() && this.isCollider(entity)) {
-                    isCollision = true;
-                }
-            }
-        }
-        stand = (velocityX == 0 && velocityY == 0) || isCollision;
-        pixelX -= this.velocityX;
-        pixelY -= this.velocityY;
+        // TO DO
     }
 
     @Override

@@ -38,28 +38,7 @@ public class Kondoria extends Enemy {
     @Override
     public void checkCollision() {
         isCollision = false;
-        pixelX += this.velocityX;
-        pixelY += this.velocityY;
-        for (int i = 0; i < HEIGHT; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                Entity entity = map.getTile(j, i);
-                if (entity.isBlock() && this.isCollider(entity) && (entity instanceof Wall)) {
-                    isCollision = true;
-                }
-            }
-        }
-
-        map.getBombs().forEach(bomb -> {
-            Entity entity1 = bomb;
-            if (entity1.isBlock() && this.isCollider(entity1)) {
-                isCollision = true;
-            }
-            if(this.isCollider(entity1) && this instanceof Enemy) {
-                isCollision = true;
-            }
-        });
-        pixelX -= this.velocityX;
-        pixelY -= this.velocityY;
+        // TO DO
     }
 
     @Override
