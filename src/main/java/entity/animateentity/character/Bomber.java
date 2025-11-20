@@ -1,5 +1,6 @@
 package entity.animateentity.character;
 
+import entity.Entity;
 import entity.animateentity.Bomb;
 import entity.animateentity.character.enemy.Enemy;
 import entity.staticentity.Grass;
@@ -9,6 +10,7 @@ import graphics.Sprite;
 import input.KeyInput;
 import sound.Sound;
 import texture.BombTexture;
+import entity.staticentity.Portal;
 
 import static graphics.Sprite.*;
 
@@ -164,5 +166,36 @@ public class Bomber extends Character {
 
     public int getTimeRevival() {
         return timeRevival;
+    }
+
+    @Override
+    public void update() {
+        super.update(); // Gọi logic di chuyển cơ bản của Character
+        checkWinCondition(); // Kiểm tra xem đã thắng chưa
+    }
+
+    // [MỚI] Logic kiểm tra điều kiện qua màn
+    private void checkWinCondition() {
+        // 1. Nếu vẫn còn quái thì chưa được qua
+        if (!map.getEnemies().isEmpty()) {
+            return;
+        }
+
+        // 2. Tính toán vị trí chính giữa của nhân vật
+        // Cộng thêm một nửa kích thước để lấy tâm nhân vật, thay vì góc trên trái
+        int centerX = pixelX + Sprite.SCALED_SIZE / 2;
+        int centerY = pixelY + Sprite.SCALED_SIZE / 2;
+
+        int tileX = centerX / Sprite.SCALED_SIZE;
+        int tileY = centerY / Sprite.SCALED_SIZE;
+
+        // 3. Lấy đối tượng tại vị trí chân
+        Entity objectAtFeet = map.getTile(tileX, tileY);
+
+        // 4. Kiểm tra xem đó có phải là Portal không
+        if (objectAtFeet instanceof Portal) {
+            // Gọi hàm chuyển map
+            map.nextLevel();
+        }
     }
 }

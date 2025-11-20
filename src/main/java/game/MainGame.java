@@ -25,12 +25,14 @@ public class MainGame extends Application {
     private static int score = 0;
     private static boolean backToMenu = false;
     private static boolean win = false;
+
     private GraphicsContext graphicsContext;
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
     private Canvas canvas;
     private Canvas topInfo;
     private Canvas gameMenu;
+
     private final double FPS = 120.0;
     private int countdown;
     private final long timePerFrame = (long) (1000000000 / FPS);
@@ -44,26 +46,41 @@ public class MainGame extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle(GAME_TITLE);
+
+        // Khởi tạo Canvas
         canvas = new Canvas(WIDTH_SCREEN * SCALED_SIZE, HEIGHT_SCREEN * SCALED_SIZE);
         topInfo = new Canvas(WIDTH_SCREEN * SCALED_SIZE, UP_BORDER * SCALED_SIZE);
         gameMenu = new Canvas(WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
+
         graphicsContext = canvas.getGraphicsContext2D();
         topInfoContext = topInfo.getGraphicsContext2D();
         gameMenuContext = gameMenu.getGraphicsContext2D();
+
+        // Font chữ
         Font font = Font.loadFont(FONT_URLS[0], 30);
         Font menu_font = Font.loadFont(FONT_URLS[0], 35);
+
         topInfoContext.setFont(font);
         topInfoContext.setFill(Color.WHITE);
         gameMenuContext.setFont(menu_font);
         gameMenuContext.setFill(Color.WHITE);
+
+        // Scene Setup
         VBox root = new VBox(topInfo, canvas);
         Scene scene = new Scene(root);
         VBox root2 = new VBox(gameMenu);
         Scene scene2 = new Scene(root2);
+
         stage.setScene(scene2);
         stage.setResizable(false);
-        stage.getIcons().add(new Image("/icon.png"));
+        try {
+            stage.getIcons().add(new Image("/icon.png")); // Cần đảm bảo file icon tồn tại để ko lỗi
+        } catch (Exception e) {
+            System.out.println("Icon not found");
+        }
         stage.show();
+
+        // Timing & Sound
         startTime = System.nanoTime();
         lastFrame = 0;
         lastTime = 0;
@@ -71,21 +88,20 @@ public class MainGame extends Application {
         Sound.menu_sound.play();
         Sound.menu_sound.loop();
         countdown = 160;
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long currentTime) {
                 long now = currentTime - startTime;
+
+                // --- LOGIC MENU HOẶC CHUYỂN CẢNH ---
                 if (!choseStart || backToMenu) {
                     menu.setStart(false);
                     menu.renderMenu(gameMenuContext);
-                    scene2.setOnKeyPressed(keyEvent -> {
-                        String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, true);
-                    });
-                    scene2.setOnKeyReleased(keyEvent -> {
-                        String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, false);
-                    });
+
+                    scene2.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
+                    scene2.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
+
                     if(menu.isStart() || countdown != 160) {
                         if(countdown == 160) {
                             Sound.level_start.play();
@@ -93,52 +109,62 @@ public class MainGame extends Application {
                         countdown--;
                         menu.renderMessage('s', gameMenuContext);
                     }
+
+                    // BẮT ĐẦU GAME
                     if (countdown == 0) {
                         countdown = 160;
                         backToMenu = false;
                         choseStart = true;
+                        win = false; // Reset trạng thái thắng khi chơi lại
+
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
+
+                        // [ĐÃ SỬA] Code gọn gàng hơn, gọi loadLevel(0)
                         try {
-                            map.createMap("src/main/resources/levels/Level3.txt");
+                            Map.getGameMap().loadLevel(0);
                             map.resetNumber();
+                            score = 0; // Reset điểm khi chơi mới
                         } catch (FileNotFoundException e) {
-                            System.out.println(e);
+                            e.printStackTrace();
                         }
                     }
-                } else {
+                }
+                // --- LOGIC TRONG GAME ---
+                else {
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
                         map.updateMap();
                         map.renderMap(graphicsContext);
                         map.renderTopInfo(topInfoContext);
-                        scene.setOnKeyPressed(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, true);
-                        });
-                        scene.setOnKeyReleased(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, false);
-                        });
+
+                        scene.setOnKeyPressed(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), true));
+                        scene.setOnKeyReleased(keyEvent -> KeyInput.keyInput.put(keyEvent.getCode().toString(), false));
+
+                        // Xử lý khi THUA (Game Over)
                         if((backToMenu && !win) || (countdown != 160 && !win)) {
                             if(countdown == 160) {
                                 Sound.game_over.play();
                                 stage.setScene(scene2);
                             }
                             backToMenu = false;
-                            menu.renderMessage('o', gameMenuContext);
+                            menu.renderMessage('o', gameMenuContext); // 'o' = Game Over
                             countdown--;
                         }
+
+                        // Xử lý khi THẮNG (Victory / Level Complete)
                         if((backToMenu && win) || (countdown != 160 && win)) {
                             if(countdown == 160) {
                                 Sound.level_complete.play();
                                 stage.setScene(scene2);
                             }
                             backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext);
+                            menu.renderMessage('c', gameMenuContext); // 'c' = Complete
                             countdown--;
                         }
+
+                        // Quay về Menu chính sau khi hiện thông báo xong
                         if (countdown == 0) {
                             countdown = 160;
                             choseStart = false;
@@ -148,12 +174,13 @@ public class MainGame extends Application {
                             backToMenu = true;
                             win = false;
                         }
-
                     }
                 }
+
+                // FPS Counter
                 frames++;
                 if (now - lastTime >= 1000000000) {
-                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");//+ " | LIFES: " + map.getPlayer().getLife());
+                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
                     frames = 0;
                     lastTime = now;
                 }
@@ -167,7 +194,6 @@ public class MainGame extends Application {
         launch();
     }
 
-
     public static void setNewScore(int enemy_score) {
         MainGame.score = score + enemy_score;
     }
@@ -178,8 +204,9 @@ public class MainGame extends Application {
 
     public static void setBackToMenu(boolean backToMenu) {
         MainGame.backToMenu = backToMenu;
+        // Xóa bom thừa nếu có để tránh lỗi khi vào lại
         if (map.getBombs().size() > 0) {
-            map.getBombs().remove(0);
+            map.getBombs().clear();
         }
     }
 

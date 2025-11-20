@@ -12,6 +12,7 @@ import entity.staticentity.StaticEntity;
 import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;
+import sound.Sound;
 import texture.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -44,6 +45,19 @@ public class Map {
     private int width;
     private int height;
 
+    // Biến đếm thời gian chờ khi chết
+    private int revivalWaitTime = 100;
+    private boolean isSwitchingLevel = false;
+    // Danh sách các level
+    private final String[] LEVEL_FILES = {
+            "src/main/resources/levels/Level1.txt",
+            "src/main/resources/levels/Level2.txt",
+            "src/main/resources/levels/Level3.txt"
+    };
+
+    // Biến theo dõi level hiện tại
+    private int currentLevel = 0;
+
     public static Map getGameMap() {
         if (map == null) {
             map = new Map();
@@ -58,8 +72,8 @@ public class Map {
         flames = new ArrayList<>();
         items = new ArrayList<>();
         scores = new ArrayList<>();
+        player = null;
     }
-
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
@@ -103,7 +117,7 @@ public class Map {
                     tiles[i][j] = StaticTexture.setStatic(' ', i, j);
                 }
 
-                // [SỬA LỖI 1] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall' (là Sprite)
+                // Chống crash: Nếu vẫn null thì tạo Wall giả
                 if (tiles[i][j] == null) {
                     tiles[i][j] = new Wall(j, i, wall);
                 }
@@ -125,6 +139,9 @@ public class Map {
                 }
             }
         }
+        isSwitchingLevel = false;
+
+
         scanner.close();
     }
 
@@ -201,33 +218,57 @@ public class Map {
     }
 
     private void renderRevival(GraphicsContext graphicsContext) {
-        if (renderX == 0 && renderY == 0) {
-            revival = false;
-            return;
+        updateRenderXY();
+
+        // Logic đếm ngược thời gian chờ
+        if (revivalWaitTime > 0) {
+            revivalWaitTime--;
         } else {
-            renderX = Math.max(0, renderX - player.getTimeRevival());
-            renderY = Math.max(0, renderY - player.getTimeRevival());
+            revival = false;
+            revivalWaitTime = 100;
         }
+
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (tiles[i][j] != null) tiles[i][j].render(graphicsContext);
+                if (tiles[i][j] != null) {
+                    tiles[i][j].render(graphicsContext);
+                }
             }
         }
         enemies.forEach(enemy -> enemy.render(graphicsContext));
         if (player != null) player.render(graphicsContext);
+        bombs.forEach(bomb -> bomb.render(graphicsContext));
+        flames.forEach(flame -> flame.render(graphicsContext));
     }
 
     private void updateRenderXY() {
         if (player == null) return;
-        renderX = player.getPixelX() - (WIDTH_SCREEN / 2) * SCALED_SIZE;
-        renderY = player.getPixelY() - (HEIGHT_SCREEN / 2) * SCALED_SIZE;
-        if (renderX < 0) renderX = 0;
-        if (renderX > this.width * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE) {
-            renderX = this.width * SCALED_SIZE - WIDTH_SCREEN * SCALED_SIZE;
+
+        int mapPixelWidth = this.width * SCALED_SIZE;
+        int screenPixelWidth = WIDTH_SCREEN * SCALED_SIZE;
+        int mapPixelHeight = this.height * SCALED_SIZE;
+        int screenPixelHeight = HEIGHT_SCREEN * SCALED_SIZE;
+
+        // Xử lý chiều ngang
+        if (mapPixelWidth <= screenPixelWidth) {
+            renderX = (mapPixelWidth - screenPixelWidth) / 2;
+        } else {
+            renderX = player.getPixelX() - screenPixelWidth / 2;
+            if (renderX < 0) renderX = 0;
+            if (renderX > mapPixelWidth - screenPixelWidth) {
+                renderX = mapPixelWidth - screenPixelWidth;
+            }
         }
-        if (renderY < 0) renderY = 0;
-        if (renderY > this.height * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE) {
-            renderY = this.height * SCALED_SIZE - HEIGHT_SCREEN * SCALED_SIZE;
+
+        // Xử lý chiều dọc
+        if (mapPixelHeight <= screenPixelHeight) {
+            renderY = (mapPixelHeight - screenPixelHeight) / 2;
+        } else {
+            renderY = player.getPixelY() - screenPixelHeight / 2;
+            if (renderY < 0) renderY = 0;
+            if (renderY > mapPixelHeight - screenPixelHeight) {
+                renderY = mapPixelHeight - screenPixelHeight;
+            }
         }
     }
 
@@ -257,18 +298,13 @@ public class Map {
     }
 
     public Entity getTile(int x, int y) {
-        // [SỬA LỖI 2] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall'
         if (y < 0 || y >= height || x < 0 || x >= width) {
             return new Wall(x, y, wall);
         }
-
         Entity tile = tiles[y][x];
-
-        // [SỬA LỖI 3] Bỏ .getFxImage(), truyền trực tiếp đối tượng 'wall'
         if (tile == null) {
             return new Wall(x, y, wall);
         }
-
         return tile;
     }
 
@@ -290,4 +326,64 @@ public class Map {
     public static int getLevelNumber() { return levelNumber; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
+
+    // --- HAI HÀM MỚI
+
+    public void nextLevel() {
+        // Nếu đang bận chuyển map thì không làm gì cả (chống lỗi double click)
+        if (isSwitchingLevel) return;
+
+        // Tính toán xem level tiếp theo là số mấy
+        int nextLevelIndex = currentLevel + 1;
+
+        // 1. Kiểm tra xem còn level tiếp theo không
+        if (nextLevelIndex < LEVEL_FILES.length) {
+            String nextMapPath = LEVEL_FILES[nextLevelIndex];
+
+            // [QUAN TRỌNG] Kiểm tra file có tồn tại không TRƯỚC KHI chuyển
+            File file = new File(nextMapPath);
+            if (!file.exists()) {
+                System.err.println("!!! LỖI: KHÔNG TÌM THẤY FILE: " + file.getAbsolutePath());
+                System.err.println(">>> Hãy kiểm tra lại tên file hoặc đường dẫn trong mảng LEVEL_FILES!");
+                return; // DỪNG LẠI NGAY, KHÔNG CHUYỂN LEVEL
+            }
+
+            // Nếu file tồn tại thì mới bắt đầu chuyển
+            isSwitchingLevel = true; // Khóa lại
+            System.out.println("Đang chuyển sang: " + nextMapPath);
+
+            try {
+                // Tăng level chính thức
+                currentLevel = nextLevelIndex;
+
+                // Reset thời gian
+                time = 60 * 200;
+
+                // Tải map
+                createMap(nextMapPath);
+
+                // Đặt lại camera
+                renderX = 0;
+                renderY = 0;
+
+                System.out.println(">>> ĐÃ VÀO LEVEL " + (currentLevel + 1));
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // 2. Nếu hết map thật sự thì mới Win
+            System.out.println("WIN GAME!");
+            MainGame.setWin(true);
+            MainGame.setBackToMenu(true);
+        }
+    }
+
+    // Hàm này để gọi ở MainGame khi bắt đầu chơi
+    public void loadLevel(int levelIndex) throws FileNotFoundException {
+        if (levelIndex >= 0 && levelIndex < LEVEL_FILES.length) {
+            this.currentLevel = levelIndex;
+            createMap(LEVEL_FILES[currentLevel]);
+        }
+    }
 }
