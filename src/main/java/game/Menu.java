@@ -87,6 +87,12 @@ public class Menu {
                 break;
             }
 
+            case 'p':
+            {
+                graphicsContext.fillText(" PAUSE ", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
+                break;
+            }
+
             case 'o': graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
             break;
         }

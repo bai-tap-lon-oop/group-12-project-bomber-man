@@ -1,5 +1,6 @@
 package game;
 
+import com.sun.tools.javac.Main;
 import input.KeyInput;
 import sound.Sound;
 import javafx.animation.AnimationTimer;
@@ -15,6 +16,8 @@ import javafx.stage.Stage;
 import map.Map;
 
 import java.io.FileNotFoundException;
+import java.io.SyncFailedException;
+import java.util.Objects;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
@@ -41,6 +44,7 @@ public class MainGame extends Application {
     private long startTime;
     private long lastTime;
     private boolean choseStart = false;
+    private boolean pause = false;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -87,8 +91,8 @@ public class MainGame extends Application {
                         String code = keyEvent.getCode().toString();
                         KeyInput.keyInput.put(code, false);
                     });
-                    if(menu.isStart() || countdown != 160) {
-                        if(countdown == 160) {
+                    if (menu.isStart() || countdown != 160) {
+                        if (countdown == 160) {
                             Sound.level_start.play();
                         }
                         countdown--;
@@ -102,6 +106,7 @@ public class MainGame extends Application {
                         Sound.stage_sound.loop();
                         try {
                             currentLevel = 0;
+                            pause = false;
                             map.createMap(MAP_URLS[currentLevel]);
                             map.resetNumber();
                             stage.setScene(scene);
@@ -112,63 +117,92 @@ public class MainGame extends Application {
                 } else {
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
-                        map.updateMap();
-                        map.renderMap(graphicsContext);
-                        map.renderTopInfo(topInfoContext);
-                        scene.setOnKeyPressed(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, true);
-                        });
-                        scene.setOnKeyReleased(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, false);
-                        });
 
-                        if((backToMenu && !win) || (countdown != 160 && !win)) {
-                            if(countdown == 160) {
-                                Sound.game_over.play();
-                                stage.setScene(scene2);
+                        if (!pause) {
+                            map.updateMap();
+                            map.renderMap(graphicsContext);
+                            map.renderTopInfo(topInfoContext);
+                            scene.setOnKeyPressed(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                KeyInput.keyInput.put(code, true);
+                                if (code.equals("P")) {
+                                    if (!pause) {
+                                        pause = true;
+                                        stage.setScene(scene2);
+                                        menu.renderMessage('p', gameMenuContext);
+                                        Sound.stage_sound.stop();
+                                        Sound.menu_sound.play();
+                                        Sound.menu_sound.loop();
+                                    }
+                                }
+                            });
+                            scene.setOnKeyReleased(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                KeyInput.keyInput.put(code, false);
+                            });
+                            if ((backToMenu && !win) || (countdown != 160 && !win)) {
+                                if (countdown == 160) {
+                                    Sound.game_over.play();
+                                    stage.setScene(scene2);
+                                }
+                                backToMenu = false;
+                                menu.renderMessage('o', gameMenuContext);
+                                countdown--;
                             }
-                            backToMenu = false;
-                            menu.renderMessage('o', gameMenuContext);
-                            countdown--;
-                        }
-                        if((backToMenu && win) || (countdown != 160 && win)) {
-                            if(countdown == 160) {
-                                Sound.level_complete.play();
-                                stage.setScene(scene2);
+                            if ((backToMenu && win) || (countdown != 160 && win)) {
+                                if (countdown == 160) {
+                                    Sound.level_complete.play();
+                                    stage.setScene(scene2);
+                                }
+                                backToMenu = false;
+                                menu.renderMessage('c', gameMenuContext);
+                                countdown--;
                             }
-                            backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext);
-                            countdown--;
-                        }
-
-                        if (countdown == 0) {
-                            countdown = 160;
-                            if (!win) {
-                                choseStart = false;
-                                Sound.stage_sound.stop();
-                                Sound.menu_sound.play();
-                                Sound.menu_sound.loop();
-                                backToMenu = true;
-                                win = false;
-                            } else {
-                                try {
-                                    currentLevel++;
-                                    map.createMap(MAP_URLS[currentLevel]);
-                                    map.resetNumber();
-                                    backToMenu = false;
-                                    win = false;
-                                    stage.setScene(scene);
-                                } catch (Exception e) {
+                            if (countdown == 0) {
+                                countdown = 160;
+                                if (!win) {
                                     choseStart = false;
                                     Sound.stage_sound.stop();
                                     Sound.menu_sound.play();
                                     Sound.menu_sound.loop();
                                     backToMenu = true;
                                     win = false;
+                                } else {
+                                    try {
+                                        currentLevel++;
+                                        map.createMap(MAP_URLS[currentLevel]);
+                                        map.resetNumber();
+                                        backToMenu = false;
+                                        win = false;
+                                        stage.setScene(scene);
+                                    } catch (Exception e) {
+                                        choseStart = false;
+                                        Sound.stage_sound.stop();
+                                        Sound.menu_sound.play();
+                                        Sound.menu_sound.loop();
+                                        backToMenu = true;
+                                        win = false;
+                                        stage.setScene(scene2);
+                                    }
                                 }
                             }
+                        }
+                        else {
+                            menu.renderMessage('p', gameMenuContext);
+                            scene2.setOnKeyPressed(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                if (code.equals("P")) {
+                                    pause = false;
+                                    stage.setScene(scene);
+                                    Sound.menu_sound.stop();
+                                    Sound.stage_sound.play();
+                                    Sound.stage_sound.loop();
+                                }
+                                else if (code.equals("ESCAPE")) {
+                                    backToMenu = true;
+                                    pause = false;
+                                }
+                            });
                         }
                     }
                 }

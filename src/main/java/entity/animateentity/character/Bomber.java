@@ -6,6 +6,7 @@ import entity.staticentity.Grass;
 import entity.staticentity.SpeedItem;
 import entity.staticentity.CoinItem;
 import entity.staticentity.SwitchItem;
+import game.MainGame;
 import graphics.Sprite;
 import input.KeyInput;
 import sound.Sound;
@@ -129,7 +130,6 @@ public class Bomber extends Character {
         tileX = pixelX / SCALED_SIZE;
         tileY = pixelY / SCALED_SIZE;
     }
-
 
     @Override
     public void setDirection() {

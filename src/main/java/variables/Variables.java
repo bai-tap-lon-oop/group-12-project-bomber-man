@@ -22,9 +22,10 @@ public class Variables {
         RIGHT,
         PLACEBOMB,
         DESTROYED,
+        PAUSE,
         NONE,
-
     }
+    
     public static enum STATUS {
         NOTEXPLODEDYET,
         EXPLODING,
