@@ -43,7 +43,8 @@ public class Variables {
 
     public static final String[] MAP_URLS = {
            Variables.class.getResource("/levels/Level1.txt").getPath(),
-           Variables.class.getResource("/levels/Level2.txt").getPath()
+           Variables.class.getResource("/levels/Level2.txt").getPath(),
+            Variables.class.getResource("/levels/Level3.txt").getPath()
     };
 
     public static final String[] FONT_URLS = {
