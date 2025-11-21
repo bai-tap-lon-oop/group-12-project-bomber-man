@@ -3,6 +3,8 @@ package map;
 import entity.Entity;
 import entity.animateentity.Bomb;
 import entity.animateentity.Flame;
+import entity.animateentity.SpikeTrap;
+import entity.animateentity.Swamp;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
@@ -39,6 +41,8 @@ public class Map {
     private ArrayList<Flame> flames;
     private ArrayList<Item> items;
     private ArrayList<Score> scores;
+    private ArrayList<SpikeTrap> spikeTraps;
+    private ArrayList<Swamp> swamps;
 
     public static Map getGameMap() {
         if (map == null) {
@@ -54,6 +58,8 @@ public class Map {
         flames = new ArrayList<>();
         items = new ArrayList<>();
         scores = new ArrayList<>();
+        spikeTraps = new ArrayList<>();
+        swamps = new ArrayList<>();
     }
 
     public ArrayList<Enemy> getEnemies() {
@@ -85,6 +91,14 @@ public class Map {
                 }
                 if (c == '*') {
                     tiles[i][j] = BrickTexture.setBrick(i, j);
+                }
+                if (c == '^') {
+                    SpikeTrap trap = new SpikeTrap(j, i, spike_trap);
+                    spikeTraps.add(trap);
+                }
+                if (c == '~') {
+                    Swamp swampEntity = new Swamp(j, i, graphics.Sprite.swamp);
+                    swamps.add(swampEntity);
                 }
                 Character character = CharacterTexture.setCharacter(c, i, j);
 
@@ -188,6 +202,12 @@ public class Map {
         scores.forEach(score -> {
             score.update();
         });
+        spikeTraps.forEach(trap -> {
+            trap.update();
+        });
+        swamps.forEach(swamp -> {
+            swamp.update();
+        });
         removeEntities();
     }
 
@@ -265,6 +285,12 @@ public class Map {
                 tiles[i][j].render(graphicsContext);
             }
         }
+        swamps.forEach(swamp -> {
+            swamp.render(graphicsContext);
+        });
+        spikeTraps.forEach(trap -> {
+            trap.render(graphicsContext);
+        });
         enemies.forEach(enemy -> {
             enemy.render(graphicsContext);
         });

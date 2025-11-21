@@ -44,7 +44,7 @@ public abstract class AnimateEntity extends Entity {
 
     public boolean isDestroyed() {
         return destroyed;
-    }
+}
 
     public abstract void delete();
 }
