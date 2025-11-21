@@ -1,44 +1,44 @@
 package map;
 
+import entity.Entity;
 import entity.animateentity.Bomb;
+import entity.animateentity.Flame;
+import entity.animateentity.character.enemy.*;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
-import entity.animateentity.character.enemy.*;
-import entity.animateentity.Flame;
-import entity.Entity;;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
 import game.MainGame;
 import game.Menu;
 import texture.*;
+import static variables.Variables.*;
+import static graphics.Sprite.*;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import static variables.Variables.*;
-import static graphics.Sprite.*;
 
 public class Map {
     private static Map map;
     private static int levelNumber;
     private int time = 60 * 200;
     private Image topInfoImage;
+    private Bomber player;
+    private boolean revival;
+    private int renderX;
+    private int renderY;
+
     private Entity[][] tiles;
     private ArrayList<Enemy> enemies;
     private ArrayList<Bomb> bombs;
     private ArrayList<Flame> flames;
     private ArrayList<Item> items;
     private ArrayList<Score> scores;
-    private Bomber player;
-    private boolean revival;
-    private int renderX;
-    private int renderY;
 
     public static Map getGameMap() {
         if (map == null) {
@@ -59,6 +59,7 @@ public class Map {
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
+
     public void resetNumber() {
         Flame.flameLength = 1;
         Bomb.limit = 1;
@@ -66,6 +67,7 @@ public class Map {
         player.setSpeed(2);
         time = 60*200;
     }
+    
     public void createMap(String mapPath) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(mapPath));
         topInfoImage = new Image("/top_info.png");
