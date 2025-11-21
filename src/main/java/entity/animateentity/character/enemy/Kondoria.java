@@ -29,35 +29,38 @@ public class Kondoria extends Enemy {
         this.defaultCntMove = 5;
         this.life = 1;
     }
+    // Chọn hướng đi cho kondoria
     @Override
     public DIRECTION path(Map map, Bomber player, Enemy enemy) {
         DodgePath dodgePath = new DodgePath(map, map.getPlayer(),this);
         return dodgePath.path();
     }
-
+    // Kiểm tra va chạm
     @Override
     public void checkCollision() {
         isCollision = false;
+        // Di chuyển trước thử
         pixelX += this.velocityX;
         pixelY += this.velocityY;
+
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
                 Entity entity = map.getTile(j, i);
+                // Kiểm tra va chạm và nấu là k phải tường (Wall) thì đều có thể đi qua tức có thể đi qua (Brick)
                 if (entity.isBlock() && this.isCollider(entity) && (entity instanceof Wall)) {
                     isCollision = true;
                 }
             }
         }
 
+        // Kiểm tra va chạm với bomb thì k cho đi qua
         map.getBombs().forEach(bomb -> {
-            Entity entity1 = bomb;
-            if (entity1.isBlock() && this.isCollider(entity1)) {
-                isCollision = true;
-            }
-            if(this.isCollider(entity1) && this instanceof Enemy) {
+            if (bomb.isBlock() && this.isCollider(bomb)) {
                 isCollision = true;
             }
         });
+
+        // Trả về vị trí cũ
         pixelX -= this.velocityX;
         pixelY -= this.velocityY;
     }
