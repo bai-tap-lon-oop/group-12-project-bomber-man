@@ -1,6 +1,6 @@
 1 13 31
 ###############################
-#p  b  ** *    *   *  * * *   #
+#pq b  ** *    *   *  * * *   #
 # # # #*# # #*#*# # # #*#*#*# #
 #  x*     ***  *      *   * * #
 # ^^^^^^^ #*# # #*#*# # # # #*#
@@ -29,7 +29,8 @@ x - Portal
 ^ - Spike Trap
 
 Character:
-p - Bomber
+p - Bomber (Player 1)
+q - Bomber (Player 2)
 1 - Balloon
 2 - Oneal
 3 - Doll

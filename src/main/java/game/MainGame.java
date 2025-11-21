@@ -104,12 +104,18 @@ public class MainGame extends Application {
                     
                     scene2.setOnKeyPressed(keyEvent -> {
                         String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, true);
+                        // Xử lý input cho menu
+                        if (menu.keyInput instanceof input.MenuInput) {
+                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, true);
+                        }
                     });
 
                     scene2.setOnKeyReleased(keyEvent -> {
                         String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, false);
+                        // Xử lý input cho menu
+                        if (menu.keyInput instanceof input.MenuInput) {
+                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, false);
+                        }
                     });
 
                     if(menu.isStart() || countdown != 160) {
@@ -176,11 +182,28 @@ public class MainGame extends Application {
                                 return;
                             }
 
-                            KeyInput.keyInput.put(code, true);
+                            // Xử lý phím cho Player 1 (WASD + SPACE)
+                            if (map.getPlayer() != null && map.getPlayer().keyInput instanceof input.PlayerInput) {
+                                ((input.PlayerInput)map.getPlayer().keyInput).setKeyPressed(code, true);
+                            }
+                            
+                            // Xử lý phím cho Player 2 (Arrow keys + SPACE)
+                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                                ((input.Player2Input)map.getPlayer2().keyInput).setKeyPressed(code, true);
+                            }
                         });
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, false);
+                            
+                            // Xử lý phím cho Player 1
+                            if (map.getPlayer() != null && map.getPlayer().keyInput instanceof input.PlayerInput) {
+                                ((input.PlayerInput)map.getPlayer().keyInput).setKeyPressed(code, false);
+                            }
+                            
+                            // Xử lý phím cho Player 2
+                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                                ((input.Player2Input)map.getPlayer2().keyInput).setKeyPressed(code, false);
+                            }
                         });
 
                         // ===== XỬ LÝ LOSE =====

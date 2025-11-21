@@ -31,6 +31,7 @@ public class Map {
     private int time = 60 * 200;
     private Image topInfoImage;
     private Bomber player;
+    private Bomber player2;
     private boolean revival;
     private int renderX;
     private int renderY;
@@ -105,6 +106,8 @@ public class Map {
                 if (character != null) {
                     if (c == 'p') {
                         player = (Bomber) character;
+                    } else if (c == 'q') {
+                        player2 = (Bomber) character;
                     } else {
                         enemies.add((Enemy) character);
                     }
@@ -190,6 +193,9 @@ public class Map {
             enemy.update();
         });
         player.update();
+        if (player2 != null) {
+            player2.update();
+        }
         bombs.forEach(bomb -> {
             bomb.update();
         });
@@ -254,6 +260,9 @@ public class Map {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
 
     }
 
@@ -295,6 +304,9 @@ public class Map {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
         bombs.forEach(bomb -> {
             bomb.render(graphicsContext);
         });
@@ -320,6 +332,10 @@ public class Map {
 
     public Bomber getPlayer() {
         return this.player;
+    }
+
+    public Bomber getPlayer2() {
+        return this.player2;
     }
 
     public ArrayList<Bomb> getBombs() {

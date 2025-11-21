@@ -38,10 +38,19 @@ public class SpikeTrap extends AnimateEntity {
     }
 
     private void checkAndDamageBomber() {
+        // Kiểm tra Player 1
         Bomber bomber = map.getPlayer();
         if (bomber != null && bomber.getLife() > 0) {
             if (this.getBorder().intersects(bomber.getBorder())) {
                 bomber.destroy();
+            }
+        }
+        
+        // Kiểm tra Player 2
+        Bomber bomber2 = map.getPlayer2();
+        if (bomber2 != null && bomber2.getLife() > 0) {
+            if (this.getBorder().intersects(bomber2.getBorder())) {
+                bomber2.destroy();
             }
         }
     }

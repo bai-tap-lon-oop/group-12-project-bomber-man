@@ -88,12 +88,8 @@ public class Bomber extends Character {
                 }
             }
         });
-        //Va chạm với Bomb 
-        map.getBombs().forEach(bomb -> {
-            if (!this.isCollider(bomb)) {
-                bomb.setBlock(true);
-            }
-        });
+        //Va chạm với Bomb - Player có thể đi qua bomb
+        // (Không cần xử lý collision với bomb nữa)
         //Va chạm với Vật phẩm (Item)
         map.getItems().forEach(item -> {
             if (this.isCollider(item)) {
@@ -112,6 +108,7 @@ public class Bomber extends Character {
                 switch (direction) {
                     case UP, DOWN -> pixelX += i;
                     case LEFT, RIGHT -> pixelY += i;
+                    default -> {}
                 }
                 super.checkCollision();
                 if (!isCollision) {
@@ -120,6 +117,7 @@ public class Bomber extends Character {
                 switch (direction) {
                     case UP, DOWN -> pixelX -= i;
                     case LEFT, RIGHT -> pixelY -= i;
+                    default -> {}
                 }
             }
         }
@@ -131,6 +129,13 @@ public class Bomber extends Character {
     @Override
     public void setDirection() {
         direction = keyInput.handleKeyInput(); // Lấy hướng di chuyển nhận vào từ bàn phím
+        
+        // Xử lý đặt bomb riêng, không ảnh hưởng đến di chuyển
+        if (direction == PLACEBOMB) {
+            placeBombAt(pixelX, pixelY);
+            direction = NONE; // Reset về NONE sau khi đặt bomb
+        }
+        
         this.setVelocity(0, 0);
         
         switch (direction) {
@@ -140,7 +145,7 @@ public class Bomber extends Character {
             case RIGHT -> this.setVelocity(defaultVel, 0);
             case UP -> this.setVelocity(0, -defaultVel);
             case DOWN -> this.setVelocity(0, defaultVel);
-            case PLACEBOMB -> placeBombAt(pixelX, pixelY);
+            default -> this.setVelocity(0, 0);
         }
         
         // Áp dụng slow effect: chỉ di chuyển mỗi 4 frame thay vì mỗi frame
@@ -163,7 +168,9 @@ public class Bomber extends Character {
 
     @Override
     public void delete() {
-        this.life--;
+        // Trừ life của player1 (dùng chung life pool)
+        map.getPlayer().life--;
+        
         timeRevival = 7;
         immortal = 100;
         map.setRevival(true);

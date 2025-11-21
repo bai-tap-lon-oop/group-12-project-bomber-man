@@ -17,6 +17,7 @@ public class Swamp extends AnimateEntity {
     }
 
     private void checkPlayerOnSwamp() {
+        // Kiểm tra Player 1
         Bomber bomber = map.getPlayer();
         if (bomber != null) {
             // Kiểm tra nếu bomber đang đứng trên swamp (va chạm bounding box)
@@ -29,6 +30,20 @@ public class Swamp extends AnimateEntity {
                 // Nếu bomber rời khỏi swamp này, khôi phục tốc độ
                 if (bomber.getSlowSource() == this) {
                     bomber.removeSlowEffect();
+                }
+            }
+        }
+        
+        // Kiểm tra Player 2
+        Bomber bomber2 = map.getPlayer2();
+        if (bomber2 != null) {
+            if (this.getBorder().intersects(bomber2.getBorder())) {
+                if (bomber2.getSlowSource() != this) {
+                    bomber2.applySlowEffect(SPEED_REDUCTION, this);
+                }
+            } else {
+                if (bomber2.getSlowSource() == this) {
+                    bomber2.removeSlowEffect();
                 }
             }
         }

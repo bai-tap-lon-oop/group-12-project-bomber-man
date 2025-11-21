@@ -1,6 +1,6 @@
 2 13 31
 ###############################
-#   b  ** *    *   *  * * *   #
+#  qb  ** *    *   *  * * *   #
 # # # #*# # #*#*# # # #*#*#*# #
 #  x*  p  ***  *      *   * * #
 # # # # # #*# # #*#*# # # # #*#
@@ -27,7 +27,8 @@ Tiles:
 x - Portal
 
 Character:
-p - Bomber
+p - Bomber (Player 1)
+q - Bomber (Player 2)
 1 - Balloon
 2 - Oneal
 3 - Doll
