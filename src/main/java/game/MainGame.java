@@ -1,6 +1,7 @@
 package game;
 
 import input.KeyInput;
+import input.PlayerInput;
 import sound.Sound;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -116,6 +117,7 @@ public class MainGame extends Application {
                         scene.setOnKeyPressed(keyEvent -> {
                             String code = keyEvent.getCode().toString();
                             KeyInput.keyInput.put(code, true);
+                            PlayerInput.lastPressedKey = code;
                         });
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
