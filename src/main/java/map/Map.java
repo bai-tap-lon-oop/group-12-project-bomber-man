@@ -82,6 +82,7 @@ public class Map {
         levelNumber = _string.charAt(0) - '0';
         resetEntities();
         revival = false;
+        player2 = null; // Reset player2 khi tạo map mới
         for (int i = 0; i < HEIGHT; i++) {
             String string = scanner.nextLine();
             for (int j = 0; j < WIDTH; j++) {
@@ -106,13 +107,16 @@ public class Map {
                 if (character != null) {
                     if (c == 'p') {
                         player = (Bomber) character;
-                    } else if (c == 'q') {
-                        player2 = (Bomber) character;
                     } else {
                         enemies.add((Enemy) character);
                     }
                 }
             }
+        }
+        
+        // Nếu chế độ 2 players, tạo player2 ở vị trí bên cạnh player1
+        if (Menu.getGameMode() == 2 && player != null) {
+            player2 = (Bomber) CharacterTexture.setCharacter('q', player.getTileY(), player.getTileX() + 1);
         }
     }
 

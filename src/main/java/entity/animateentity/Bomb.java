@@ -1,5 +1,6 @@
 package entity.animateentity;
 
+import entity.animateentity.character.Bomber;
 import entity.staticentity.Grass;
 import graphics.Sprite;
 import sound.Sound;
@@ -15,12 +16,21 @@ public class Bomb extends AnimateEntity {
     private boolean right = true;
     private boolean down = true;
     private int cnt = 0;
+    private Bomber owner; // Player đặt bomb này
 
     public Bomb(int x, int y, Sprite sprite) {
         super(x, y, sprite);
         animation.put(NOTEXPLODEDYET, Sprite.BOMB);
         currentAnimate = animation.get(NOTEXPLODEDYET);
         block = false;
+    }
+    
+    public void setOwner(Bomber owner) {
+        this.owner = owner;
+    }
+    
+    public Bomber getOwner() {
+        return this.owner;
     }
 
     @Override

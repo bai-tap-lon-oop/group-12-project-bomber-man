@@ -16,6 +16,7 @@ public class Bomber extends Character {
     public KeyInput keyInput;
     public boolean canPlace = true;
     private int timeRevival;
+    private int bombLimit = 1; // Số lượng bomb mỗi player có thể đặt
     
     // biến riêng cho Swamp
     private boolean isSlowed = false;
@@ -66,9 +67,19 @@ public class Bomber extends Character {
                 canPlace = false;
             }
         }
-        // Nếu vị trí đã oke thì đặt bomb = cách tạo ra dối tượng bomb trên mao và thêm âm thanh
-        if (map.getTile(bombX, bombY) instanceof Grass && map.getBombs().size() < Bomb.limit && canPlace) {
+        
+        // Đếm số bomb của player này đang có trên map
+        int myBombCount = 0;
+        for (Bomb bomb: map.getBombs()) {
+            if (bomb.getOwner() == this) {
+                myBombCount++;
+            }
+        }
+        
+        // Nếu vị trí đã oke thì đặt bomb = cách tạo ra đối tượng bomb trên map và thêm âm thanh
+        if (map.getTile(bombX, bombY) instanceof Grass && myBombCount < bombLimit && canPlace) {
             Bomb bomb = BombTexture.setBomb(bombX, bombY); // Tạo object bomb
+            bomb.setOwner(this); // Đặt owner cho bomb
             map.getBombs().add(bomb);
             Sound.place_bomb.play(); // Tạo âm thanh
         }
@@ -98,6 +109,9 @@ public class Bomber extends Character {
                 item.remove();
                 if (item instanceof SpeedItem) {
                     setSpeed(SpeedItem.increasedSpeed);
+                }
+                if (item instanceof entity.staticentity.BombItem) {
+                    bombLimit++; // Tăng số lượng bomb của player này
                 }
                 item.delete();// Xóa vật phẩm khỏi map
             }

@@ -100,7 +100,14 @@ public class MainGame extends Application {
 
                 if (!choseStart || backToMenu) {
                     menu.setStart(false);
-                    menu.renderMenu(gameMenuContext);
+                    
+                    // Nếu chưa chọn mode, hiển thị màn hình chọn mode
+                    if (!menu.isModeSelected()) {
+                        menu.renderModeSelection(gameMenuContext);
+                    } else {
+                        // Hiển thị menu chính
+                        menu.renderMenu(gameMenuContext);
+                    }
                     
                     scene2.setOnKeyPressed(keyEvent -> {
                         String code = keyEvent.getCode().toString();
@@ -161,6 +168,7 @@ public class MainGame extends Application {
                                     paused = false;
                                     backToMenu = true;
                                     choseStart = false;
+                                    menu.resetModeSelection();
                                     Sound.stage_sound.stop();
                                     Sound.menu_sound.play();
                                     Sound.menu_sound.loop();
@@ -251,6 +259,7 @@ public class MainGame extends Application {
                                 choseStart = false;
                                 backToMenu = true;
                                 win = false;  
+                                menu.resetModeSelection();
                                 Sound.stage_sound.stop(); 
                                 Sound.menu_sound.play();    
                                 Sound.menu_sound.loop();

@@ -1,6 +1,5 @@
 package entity.staticentity;
 
-import entity.animateentity.Bomb;
 import graphics.Sprite;
 
 public class BombItem extends Item{
@@ -10,9 +9,7 @@ public class BombItem extends Item{
 
     @Override
     public void update() {
-        if (isActivated) {
-            isActivated = false;
-            Bomb.limit++;
-        }
+        // Xử lý tăng bomb limit được làm trong Bomber.checkCollision()
+        // Không cần xử lý gì ở đây
     }
 }
