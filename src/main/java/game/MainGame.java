@@ -122,7 +122,13 @@ public class MainGame extends Application {
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
                             KeyInput.keyInput.put(code, false);
-                            PlayerInput.lastPressedKey = null;
+                            if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
+                            else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
+                            else if (KeyInput.keyInput.getOrDefault("S", false)) PlayerInput.lastPressedKey = "S";
+                            else if (KeyInput.keyInput.getOrDefault("D", false)) PlayerInput.lastPressedKey = "D";
+                            else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
+                            else PlayerInput.lastPressedKey = null;
+
                         });
                         if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
                             if(countdown == 160) {
