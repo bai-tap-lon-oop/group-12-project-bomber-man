@@ -122,6 +122,7 @@ public class MainGame extends Application {
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
                             KeyInput.keyInput.put(code, false);
+                            PlayerInput.lastPressedKey = null;
                         });
                         if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
                             if(countdown == 160) {
