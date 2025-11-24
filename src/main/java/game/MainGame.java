@@ -136,6 +136,7 @@ public class MainGame extends Application {
                         countdown = 160;
                         backToMenu = false;
                         choseStart = true;
+                        Sound.menu_sound.stop();
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
