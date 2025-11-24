@@ -25,7 +25,7 @@ public class Variables {
         PAUSE,
         NONE,
     }
-    
+
     public static enum STATUS {
         NOTEXPLODEDYET,
         EXPLODING,
