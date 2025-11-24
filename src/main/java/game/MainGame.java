@@ -2,6 +2,7 @@ package game;
 
 import com.sun.tools.javac.Main;
 import input.KeyInput;
+import input.PlayerInput;
 import sound.Sound;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -125,6 +126,7 @@ public class MainGame extends Application {
                             scene.setOnKeyPressed(keyEvent -> {
                                 String code = keyEvent.getCode().toString();
                                 KeyInput.keyInput.put(code, true);
+                                PlayerInput.lastPressedKey = code;
                                 if (code.equals("P")) {
                                     if (!pause) {
                                         pause = true;
@@ -139,6 +141,13 @@ public class MainGame extends Application {
                             scene.setOnKeyReleased(keyEvent -> {
                                 String code = keyEvent.getCode().toString();
                                 KeyInput.keyInput.put(code, false);
+                                if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
+                                else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
+                                else if (KeyInput.keyInput.getOrDefault("S", false)) PlayerInput.lastPressedKey = "S";
+                                else if (KeyInput.keyInput.getOrDefault("D", false)) PlayerInput.lastPressedKey = "D";
+                                else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
+                                else PlayerInput.lastPressedKey = null;
+
                             });
                             if ((backToMenu && !win) || (countdown != 160 && !win)) {
                                 if (countdown == 160) {

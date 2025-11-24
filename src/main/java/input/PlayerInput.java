@@ -6,6 +6,8 @@ import static variables.Variables.DIRECTION.*;
 
 public class PlayerInput implements KeyInput {
 
+    public static String lastPressedKey;
+
     public void initialization() {
         keyInput.put("A", false);
         keyInput.put("D", false);
@@ -18,23 +20,19 @@ public class PlayerInput implements KeyInput {
 
     @Override
     public DIRECTION handleKeyInput() {
-        Set<String> keySet = keyInput.keySet();
-        for (String code : keySet) {
-            if (keyInput.get(code)) {
-                switch (code) {
-                    case ("W"):
-                        return UP;
-                    case ("D"):
-                        return RIGHT;
-                    case ("S"):
-                        return DOWN;
-                    case ("A"):
-                        return LEFT;
-                    case ("SPACE"):
-                        return PLACEBOMB;
-                }
-            }
+
+        if (lastPressedKey == null) return NONE;
+
+        switch (lastPressedKey) {
+            case "W": return UP;
+            case "S": return DOWN;
+            case "A": return LEFT;
+            case "D": return RIGHT;
+            case "SPACE": return PLACEBOMB;
         }
+
         return NONE;
     }
+
+
 }
