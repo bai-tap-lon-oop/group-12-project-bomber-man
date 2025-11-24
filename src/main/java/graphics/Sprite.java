@@ -262,6 +262,20 @@ public class Sprite {
     public static Sprite pass_score = new Sprite(DEFAULT_SIZE, 14, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite pontan_score = new Sprite(DEFAULT_SIZE, 15, 10, SpriteSheet.tiles, 16, 16);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Coin
+    |--------------------------------------------------------------------------
+     */
+    public static Sprite coin =  new Sprite(DEFAULT_SIZE, 6, 11, SpriteSheet.tiles, 16, 16);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Key
+    |--------------------------------------------------------------------------
+     */
+    public static Sprite key = new Sprite(DEFAULT_SIZE, 7, 11, SpriteSheet.tiles, 16, 16);
+
     public Sprite(int size, int x, int y, SpriteSheet sheet, int rw, int rh) {
         SIZE = size;
         _pixels = new int[SIZE * SIZE];
@@ -336,10 +350,15 @@ public class Sprite {
 
         for (int y = 0; y < H; y++) {
             for (int x = 0; x < W; x++) {
-                final int argb = reader.getArgb(x, y);
+                int argb = reader.getArgb(x, y);
+                // Ensure transparent pixels stay transparent
+                if ((argb & 0xFF000000) == 0) {
+                    argb = 0x00000000;
+                }
+                final int finalArgb = argb;
                 for (int dy = 0; dy < S; dy++) {
                     for (int dx = 0; dx < S; dx++) {
-                        writer.setArgb(x * S + dx, y * S + dy, argb);
+                        writer.setArgb(x * S + dx, y * S + dy, finalArgb);
                     }
                 }
             }

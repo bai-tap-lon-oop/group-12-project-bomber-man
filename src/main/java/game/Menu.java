@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.DIRECTION.*;
+import static variables.Variables.MAP_URLS;
 
 public class Menu {
     public KeyInput keyInput = new MenuInput();
@@ -73,8 +74,25 @@ public class Menu {
         switch (c) {
             case 's': graphicsContext.fillText("Stage 1", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
             break;
-            case 'c': graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
-            break;
+
+            case 'c':
+            {
+                try {
+                    String nextPath = MAP_URLS[MainGame.currentLevel + 1];
+                    graphicsContext.fillText(String.format("Stage %d", MainGame.currentLevel + 2),
+                            SCALED_SIZE * 6, SCALED_SIZE * 7.5);
+                } catch (Exception e) {
+                    graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                }
+                break;
+            }
+
+            case 'p':
+            {
+                graphicsContext.fillText(" PAUSE ", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
+                break;
+            }
+
             case 'o': graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
             break;
         }

@@ -13,7 +13,9 @@ public class PlayerInput implements KeyInput {
         keyInput.put("D", false);
         keyInput.put("W", false);
         keyInput.put("S", false);
+        keyInput.put("P", false);
         keyInput.put("SPACE", false);
+        keyInput.put("ESCAPE", false);
     }
 
     @Override

@@ -6,4 +6,10 @@ public class Wall extends StaticEntity {
         super(x, y, sprite);
         block = true;
     }
+
+    public void update() {
+        if (isRemoved()) {
+            System.out.println("Removed");
+        }
+    }
 }

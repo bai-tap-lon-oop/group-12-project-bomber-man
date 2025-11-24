@@ -5,6 +5,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import graphics.Sprite;
+import variables.Variables;
 
 import static graphics.Sprite.*;
 
@@ -21,6 +22,14 @@ public abstract class Entity {
     protected boolean block;
 
     protected boolean removed;
+
+    public boolean outOfBound() {
+        int mapWidthPx = Variables.WIDTH * Sprite.SCALED_SIZE;
+        int mapHeightPx = Variables.HEIGHT * Sprite.SCALED_SIZE;
+        return pixelX < 0 || pixelY < 0
+                || pixelX + sprite.getRealWidth()  > mapWidthPx
+                || pixelY + sprite.getRealHeight() > mapHeightPx;
+    }
 
     public Entity(int x, int y, Sprite sprite) {
         this.tileX = x;

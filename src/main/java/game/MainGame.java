@@ -1,5 +1,6 @@
 package game;
 
+import com.sun.tools.javac.Main;
 import input.KeyInput;
 import input.PlayerInput;
 import sound.Sound;
@@ -16,6 +17,8 @@ import javafx.stage.Stage;
 import map.Map;
 
 import java.io.FileNotFoundException;
+import java.io.SyncFailedException;
+import java.util.Objects;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
@@ -34,6 +37,7 @@ public class MainGame extends Application {
     private Canvas gameMenu;
     private final double FPS = 120.0;
     private int countdown;
+    public static int currentLevel = 0;
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;
@@ -41,6 +45,7 @@ public class MainGame extends Application {
     private long startTime;
     private long lastTime;
     private boolean choseStart = false;
+    private boolean pause = false;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -87,8 +92,8 @@ public class MainGame extends Application {
                         String code = keyEvent.getCode().toString();
                         KeyInput.keyInput.put(code, false);
                     });
-                    if(menu.isStart() || countdown != 160) {
-                        if(countdown == 160) {
+                    if (menu.isStart() || countdown != 160) {
+                        if (countdown == 160) {
                             Sound.level_start.play();
                         }
                         countdown--;
@@ -100,10 +105,12 @@ public class MainGame extends Application {
                         choseStart = true;
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
-                        stage.setScene(scene);
                         try {
-                            map.createMap(MAP_URLS[0]);
+                            currentLevel = 0;
+                            pause = false;
+                            map.createMap(MAP_URLS[currentLevel]);
                             map.resetNumber();
+                            stage.setScene(scene);
                         } catch (FileNotFoundException e) {
                             System.out.println(e);
                         }
@@ -111,58 +118,107 @@ public class MainGame extends Application {
                 } else {
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
-                        map.updateMap();
-                        map.renderMap(graphicsContext);
-                        map.renderTopInfo(topInfoContext);
-                        scene.setOnKeyPressed(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, true);
-                            PlayerInput.lastPressedKey = code;
-                        });
-                        scene.setOnKeyReleased(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-                            KeyInput.keyInput.put(code, false);
-                            if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
-                            else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
-                            else if (KeyInput.keyInput.getOrDefault("S", false)) PlayerInput.lastPressedKey = "S";
-                            else if (KeyInput.keyInput.getOrDefault("D", false)) PlayerInput.lastPressedKey = "D";
-                            else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
-                            else PlayerInput.lastPressedKey = null;
 
-                        });
-                        if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
-                            if(countdown == 160) {
-                                Sound.game_over.play();
-                                stage.setScene(scene2);
-                            }
-                            backToMenu = false;
-                            menu.renderMessage('o', gameMenuContext);
-                            countdown--;
-                        }
-                        if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
-                            if(countdown == 160) {
-                                Sound.level_complete.play();
-                                stage.setScene(scene2);
-                            }
-                            backToMenu = false;
-                            menu.renderMessage('c', gameMenuContext);
-                            countdown--;
-                        }
-                        if (countdown == 0) {
-                            countdown = 160;
-                            choseStart = false;
-                            Sound.stage_sound.stop();
-                            Sound.menu_sound.play();
-                            Sound.menu_sound.loop();
-                            backToMenu = true;
-                            win = false;
-                        }
+                        if (!pause) {
+                            map.updateMap();
+                            map.renderMap(graphicsContext);
+                            map.renderTopInfo(topInfoContext);
+                            scene.setOnKeyPressed(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                KeyInput.keyInput.put(code, true);
+                                PlayerInput.lastPressedKey = code;
+                                if (code.equals("P")) {
+                                    if (!pause) {
+                                        pause = true;
+                                        stage.setScene(scene2);
+                                        menu.renderMessage('p', gameMenuContext);
+                                        Sound.stage_sound.stop();
+                                        Sound.menu_sound.play();
+                                        Sound.menu_sound.loop();
+                                    }
+                                }
+                            });
+                            scene.setOnKeyReleased(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                KeyInput.keyInput.put(code, false);
+                                if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
+                                else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
+                                else if (KeyInput.keyInput.getOrDefault("S", false)) PlayerInput.lastPressedKey = "S";
+                                else if (KeyInput.keyInput.getOrDefault("D", false)) PlayerInput.lastPressedKey = "D";
+                                else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
+                                else PlayerInput.lastPressedKey = null;
 
+                            });
+                            if ((backToMenu && !win) || (countdown != 160 && !win)) {
+                                if (countdown == 160) {
+                                    Sound.game_over.play();
+                                    stage.setScene(scene2);
+                                }
+                                backToMenu = false;
+                                menu.renderMessage('o', gameMenuContext);
+                                countdown--;
+                            }
+                            if ((backToMenu && win) || (countdown != 160 && win)) {
+                                if (countdown == 160) {
+                                    Sound.level_complete.play();
+                                    stage.setScene(scene2);
+                                }
+                                backToMenu = false;
+                                menu.renderMessage('c', gameMenuContext);
+                                countdown--;
+                            }
+                            if (countdown == 0) {
+                                countdown = 160;
+                                if (!win) {
+                                    choseStart = false;
+                                    Sound.stage_sound.stop();
+                                    Sound.menu_sound.play();
+                                    Sound.menu_sound.loop();
+                                    backToMenu = true;
+                                    win = false;
+                                } else {
+                                    try {
+                                        currentLevel++;
+                                        map.createMap(MAP_URLS[currentLevel]);
+                                        map.resetNumber();
+                                        backToMenu = false;
+                                        win = false;
+                                        stage.setScene(scene);
+                                    } catch (Exception e) {
+                                        choseStart = false;
+                                        Sound.stage_sound.stop();
+                                        Sound.menu_sound.play();
+                                        Sound.menu_sound.loop();
+                                        backToMenu = true;
+                                        win = false;
+                                        stage.setScene(scene2);
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            menu.renderMessage('p', gameMenuContext);
+                            scene2.setOnKeyPressed(keyEvent -> {
+                                String code = keyEvent.getCode().toString();
+                                if (code.equals("P")) {
+                                    pause = false;
+                                    stage.setScene(scene);
+                                    Sound.menu_sound.stop();
+                                    Sound.stage_sound.play();
+                                    Sound.stage_sound.loop();
+                                }
+                                else if (code.equals("ESCAPE")) {
+                                    backToMenu = true;
+                                    pause = false;
+                                }
+                            });
+                        }
                     }
                 }
+
                 frames++;
                 if (now - lastTime >= 1000000000) {
-                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");//+ " | LIFES: " + map.getPlayer().getLife());
+                    stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
                     frames = 0;
                     lastTime = now;
                 }
@@ -175,7 +231,6 @@ public class MainGame extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 
     public static void setNewScore(int enemy_score) {
         MainGame.score = score + enemy_score;

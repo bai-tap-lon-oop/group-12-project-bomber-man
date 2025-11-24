@@ -1,0 +1,28 @@
+1 13 31
+#####################         #
+#px###############xx#         #
+#  ###############**#         #
+#   *   *2  y    * 3#         #
+#***    *****###### #         #
+#     **     #  ### #         #
+#    * ys    #   1* #         #
+#     *      #  y s*#         #
+#            ######4#         #
+#      **  1* 2by *y#         #
+#  ###############  #         #
+# *###############xz#         #
+#####################         #
+
+note:
++ Khi ông thêm level thì chỗ path này ông cũng thêm theo nhé
+            Ví dụ có 3 level thì ông thêm
+            Variables.class.getResource("/levels/Level2.txt").getPath()
++ Để đơn giản thì level nào cũng là 13 dọc và 31 ngang nhé
+
++ Trong thư mục variables
+public static final String[] MAP_URLS = {
+      Variables.class.getResource("/levels/Level1.txt").getPath(),
+      Variables.class.getResource("/levels/Level2.txt").getPath(),
+      Variables.class.getResource("/levels/Level3.txt").getPath(),
+      .. thêm đường dẫn
+};
