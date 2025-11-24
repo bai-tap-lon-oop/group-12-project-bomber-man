@@ -1,10 +1,12 @@
 package input;
 
+import java.util.HashMap;
 import java.util.Set;
 import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class PlayerInput implements KeyInput {
+    private HashMap<String, Boolean> keyInput = new HashMap<>();
 
     public void initialization() {
         keyInput.put("A", false);
@@ -28,5 +30,11 @@ public class PlayerInput implements KeyInput {
             }
         }
         return NONE;
+    }
+    
+    public void setKeyPressed(String key, boolean pressed) {
+        if (keyInput.containsKey(key)) {
+            keyInput.put(key, pressed);
+        }
     }
 }

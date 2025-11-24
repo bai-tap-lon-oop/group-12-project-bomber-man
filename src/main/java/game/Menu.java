@@ -6,6 +6,7 @@ import variables.Variables.DIRECTION;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import input.KeyInput;
 
 import java.io.File;
@@ -14,26 +15,37 @@ import java.util.Scanner;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.DIRECTION.*;
+import static variables.Variables.*;
 
 public class Menu {
     public KeyInput keyInput = new MenuInput();
     private Image newGame_Start;
     private Image newGame_Exit;
     private Image Background;
+    private Image escButton;
+    private Image qButton;
     private File high_score;
     private static int highscore;
     private Scanner scanner;
     private DIRECTION direction;
     private int state = 1;
     private boolean start = false;
+    
+    // Chế độ chơi: 1 = Single Player, 2 = Two Players
+    private static int gameMode = 1;
+    private boolean modeSelected = true; // Bắt đầu = true để hiển thị menu chính trước
+    private int modeState = 1; // 1 = Single Player, 2 = Two Players
 
     public void createMenu() {
         newGame_Start = new Image("/menu/GameMenu_Start.png");
         newGame_Exit = new Image("/menu/GameMenu_Exit.png");
         Background = new Image("/menu/Background.png");
+        escButton = new Image("/menu/Button_ESC.png");
+        qButton = new Image("/menu/Button_Q.png");
     }
 
     public void renderMenu(GraphicsContext graphicsContext) {
+        // Màn hình menu chính
         graphicsContext.drawImage(newGame_Start, 0, 0);
         if (state == 1) {
             graphicsContext.drawImage(newGame_Start, 0, 0);
@@ -60,23 +72,69 @@ public class Menu {
             state = 0;
         }
         if (direction == DESTROYED && state == 1) {
-            start = true;
-            Sound.menu_sound.stop();
+            // Khi bấm Start, chuyển sang màn hình chọn mode
+            modeSelected = false;
         }
         if (direction == DESTROYED && state == 0) {
             Platform.exit();
         }
     }
+    
+    public void renderModeSelection(GraphicsContext graphicsContext) {
+        graphicsContext.drawImage(Background, 0, 0);
+        graphicsContext.fillText("Select Game Mode", SCALED_SIZE * 4, SCALED_SIZE * 5);
+        
+        // Highlight selected mode
+        if (modeState == 1) {
+            graphicsContext.setFill(Color.RED);
+        } else {
+            graphicsContext.setFill(Color.WHITE);
+        }
+        graphicsContext.fillText("1 Player", SCALED_SIZE * 5.5, SCALED_SIZE * 7);
+        
+        if (modeState == 2) {
+            graphicsContext.setFill(Color.RED);
+        } else {
+            graphicsContext.setFill(Color.WHITE);
+        }
+        graphicsContext.fillText("2 Players", SCALED_SIZE * 5.5, SCALED_SIZE * 8.5);
+        graphicsContext.setFill(Color.WHITE);
+        
+        // Xử lý input
+        direction = keyInput.handleKeyInput();
+        keyInput.initialization();
+        if (direction == UP) {
+            modeState = 1;
+        }
+        if (direction == DOWN) {
+            modeState = 2;
+        }
+        if (direction == DESTROYED) {
+            gameMode = modeState;
+            modeSelected = true;
+            start = true;
+        }
+    }
+    
+    public boolean isModeSelected() {
+        return modeSelected;
+    }
 
     public void renderMessage(char c, GraphicsContext graphicsContext) {
         graphicsContext.drawImage(Background, 0, 0);
         switch (c) {
-            case 's': graphicsContext.fillText("Stage 1", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
-            break;
-            case 'c': graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
-            break;
-            case 'o': graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
-            break;
+            case 's': 
+                graphicsContext.fillText("Start Challenge!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                break;
+            case 'w': 
+                graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                break;
+            case 'l': 
+                graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
+                break;
+            case 'v': 
+                graphicsContext.fillText("You Win!!", SCALED_SIZE * 5.5, SCALED_SIZE * 7.5);
+                break;
         }
     }
 
@@ -90,5 +148,38 @@ public class Menu {
 
     public static int getHighscore() {
         return highscore;
+    }
+    
+    public static int getGameMode() {
+        return gameMode;
+    }
+    
+    public void resetModeSelection() {
+        modeSelected = true; // Reset về true để hiển thị menu chính
+        modeState = 1;
+        start = false;
+    }
+
+    public void renderPauseMenu(GraphicsContext graphicsContext) {
+
+        graphicsContext.setFill(Color.rgb(0, 0, 0, 0.7));
+        graphicsContext.fillRect(0, 0, WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
+
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.fillText("PAUSED", SCALED_SIZE * 5.7, SCALED_SIZE * 5);
+        
+        // graphicsContext.fillText("Press", SCALED_SIZE * 2.5, SCALED_SIZE * 7.5);
+        // graphicsContext.drawImage(escButton, SCALED_SIZE * 5.2, SCALED_SIZE * 6.5);
+        // graphicsContext.fillText("to Resume", SCALED_SIZE * 7.7, SCALED_SIZE * 7.5);
+        
+        // graphicsContext.fillText("Press", SCALED_SIZE * 3.7, SCALED_SIZE * 9.5);
+        // graphicsContext.drawImage(qButton, SCALED_SIZE * 6.4, SCALED_SIZE * 8.7);
+        // graphicsContext.fillText("to Quit", SCALED_SIZE * 7.9, SCALED_SIZE * 9.5);
+
+        graphicsContext.drawImage(escButton, SCALED_SIZE * 4.2, SCALED_SIZE * 6.5);
+        graphicsContext.fillText("Resume", SCALED_SIZE * 7.4, SCALED_SIZE * 7.5);
+        
+        graphicsContext.drawImage(qButton, SCALED_SIZE * 4.2, SCALED_SIZE * 8.7);
+        graphicsContext.fillText("  Quit", SCALED_SIZE * 7.4, SCALED_SIZE * 9.5);
     }
 }
