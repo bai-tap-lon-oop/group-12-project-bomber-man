@@ -230,6 +230,10 @@ public class MainGame extends Application {
                                 try {
                                     map.createMap(MAP_URLS[Map.getLevelNumber()]);
                                     map.resetNumber();
+
+                                    // Reset phím bấm khi sang level mới
+                                    PlayerInput.lastPressedKey = null;
+                                    KeyInput.keyInput.clear();   // nếu muốn xoá hết trạng thái phím đang giữ
                                 } catch (FileNotFoundException e) {
                                     System.out.println(e);
                                 }
