@@ -6,7 +6,6 @@ import variables.Variables.DIRECTION;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import input.KeyInput;
 
 import java.io.File;
@@ -16,15 +15,12 @@ import java.util.Scanner;
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.DIRECTION.*;
 import static variables.Variables.MAP_URLS;
-import static variables.Variables.*;
 
 public class Menu {
     public KeyInput keyInput = new MenuInput();
     private Image newGame_Start;
     private Image newGame_Exit;
     private Image Background;
-    private Image escButton;
-    private Image qButton;
     private File high_score;
     private static int highscore;
     private Scanner scanner;
@@ -36,8 +32,6 @@ public class Menu {
         newGame_Start = new Image("/menu/GameMenu_Start.png");
         newGame_Exit = new Image("/menu/GameMenu_Exit.png");
         Background = new Image("/menu/Background.png");
-        escButton = new Image("/menu/Button_ESC.png");
-        qButton = new Image("/menu/Button_Q.png");
     }
 
     public void renderMenu(GraphicsContext graphicsContext) {
@@ -78,17 +72,28 @@ public class Menu {
     public void renderMessage(char c, GraphicsContext graphicsContext) {
         graphicsContext.drawImage(Background, 0, 0);
         switch (c) {
-            case 's':
-                graphicsContext.fillText("Start Challenge!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+            case 's': graphicsContext.fillText("Stage 1", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
                 break;
-            case 'w':
-                graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+
+            case 'c':
+            {
+                try {
+                    String nextPath = MAP_URLS[MainGame.currentLevel + 1];
+                    graphicsContext.fillText(String.format("Stage %d", MainGame.currentLevel + 2),
+                            SCALED_SIZE * 6, SCALED_SIZE * 7.5);
+                } catch (Exception e) {
+                    graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
+                }
                 break;
-            case 'l':
-                graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
+            }
+
+            case 'p':
+            {
+                graphicsContext.fillText(" PAUSE ", SCALED_SIZE * 6, SCALED_SIZE * 7.5);
                 break;
-            case 'v':
-                graphicsContext.fillText("You Win!!", SCALED_SIZE * 5.5, SCALED_SIZE * 7.5);
+            }
+
+            case 'o': graphicsContext.fillText("Game Over!", SCALED_SIZE * 5, SCALED_SIZE * 7.5);
                 break;
         }
     }
@@ -103,28 +108,5 @@ public class Menu {
 
     public static int getHighscore() {
         return highscore;
-    }
-
-    public void renderPauseMenu(GraphicsContext graphicsContext) {
-
-        graphicsContext.setFill(Color.rgb(0, 0, 0, 0.7));
-        graphicsContext.fillRect(0, 0, WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
-
-        graphicsContext.setFill(Color.WHITE);
-        graphicsContext.fillText("PAUSED", SCALED_SIZE * 5.7, SCALED_SIZE * 5);
-
-        // graphicsContext.fillText("Press", SCALED_SIZE * 2.5, SCALED_SIZE * 7.5);
-        // graphicsContext.drawImage(escButton, SCALED_SIZE * 5.2, SCALED_SIZE * 6.5);
-        // graphicsContext.fillText("to Resume", SCALED_SIZE * 7.7, SCALED_SIZE * 7.5);
-
-        // graphicsContext.fillText("Press", SCALED_SIZE * 3.7, SCALED_SIZE * 9.5);
-        // graphicsContext.drawImage(qButton, SCALED_SIZE * 6.4, SCALED_SIZE * 8.7);
-        // graphicsContext.fillText("to Quit", SCALED_SIZE * 7.9, SCALED_SIZE * 9.5);
-
-        graphicsContext.drawImage(escButton, SCALED_SIZE * 4.2, SCALED_SIZE * 6.5);
-        graphicsContext.fillText("Resume", SCALED_SIZE * 7.4, SCALED_SIZE * 7.5);
-
-        graphicsContext.drawImage(qButton, SCALED_SIZE * 4.2, SCALED_SIZE * 8.7);
-        graphicsContext.fillText("  Quit", SCALED_SIZE * 7.4, SCALED_SIZE * 9.5);
     }
 }
