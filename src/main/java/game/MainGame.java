@@ -16,8 +16,6 @@ import javafx.stage.Stage;
 import map.Map;
 
 import java.io.FileNotFoundException;
-import java.io.SyncFailedException;
-import java.util.Objects;
 
 import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
