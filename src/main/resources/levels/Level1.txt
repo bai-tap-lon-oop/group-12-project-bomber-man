@@ -1,8 +1,8 @@
 1 13 31
 ############                  #
-#pq#######y#                  #
+#p #######y#                  #
 #z     1   #                  #
-#          #                  #
+#    ^~    #                  #
 # ######## #                  #
 ############                  #
                               #
@@ -26,9 +26,12 @@ Tiles:
 x - Portal
 y - Coin
 z - Switch
+~ - Swamp
+^ - Spike Trap
 
 Character:
-p - Bomber
+p - Bomber (Player 1)
+q - Bomber (Player 2)
 1 - Balloon
 2 - Oneal
 3 - Doll

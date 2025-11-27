@@ -3,6 +3,8 @@ package map;
 import entity.Entity;
 import entity.animateentity.Bomb;
 import entity.animateentity.Flame;
+import entity.animateentity.SpikeTrap;
+import entity.animateentity.Swamp;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
@@ -31,6 +33,7 @@ public class Map {
     private int time = 60 * 200;
     private Image topInfoImage;
     private Bomber player;
+    private Bomber player2;
     private boolean revival;
     private int renderX;
     private int renderY;
@@ -41,6 +44,8 @@ public class Map {
     private ArrayList<Flame> flames;
     private ArrayList<Item> items;
     private ArrayList<Score> scores;
+    private ArrayList<SpikeTrap> spikeTraps;
+    private ArrayList<Swamp> swamps;
 
     public static Map getGameMap() {
         if (map == null) {
@@ -56,6 +61,8 @@ public class Map {
         flames = new ArrayList<>();
         items = new ArrayList<>();
         scores = new ArrayList<>();
+        spikeTraps = new ArrayList<>();
+        swamps = new ArrayList<>();
     }
 
     public ArrayList<Enemy> getEnemies() {
@@ -77,6 +84,7 @@ public class Map {
         levelNumber = _string.charAt(0) - '0';
         resetEntities();
         revival = false;
+        player2 = null; // Reset player2 khi tạo map mới
         for (int i = 0; i < HEIGHT; i++) {
             String string = scanner.nextLine();
             for (int j = 0; j < WIDTH; j++) {
@@ -88,6 +96,14 @@ public class Map {
                 if (c == '*') {
                     tiles[i][j] = BrickTexture.setBrick(i, j);
                 }
+                if (c == '^') {
+                    SpikeTrap trap = new SpikeTrap(j, i, spike_trap);
+                    spikeTraps.add(trap);
+                }
+                if (c == '~') {
+                    Swamp swampEntity = new Swamp(j, i, graphics.Sprite.swamp);
+                    swamps.add(swampEntity);
+                }
                 Character character = CharacterTexture.setCharacter(c, i, j);
 
                 if (character != null) {
@@ -98,6 +114,11 @@ public class Map {
                     }
                 }
             }
+        }
+
+        // Nếu chế độ 2 players, tạo player2 ở vị trí bên cạnh player1
+        if (Menu.getGameMode() == 2 && player != null) {
+            player2 = (Bomber) CharacterTexture.setCharacter('q', player.getTileY(), player.getTileX() + 1);
         }
     }
 
@@ -177,6 +198,9 @@ public class Map {
             enemy.update();
         });
         player.update();
+        if (player2 != null) {
+            player2.update();
+        }
         bombs.forEach(bomb -> {
             bomb.update();
         });
@@ -188,6 +212,12 @@ public class Map {
         });
         scores.forEach(score -> {
             score.update();
+        });
+        spikeTraps.forEach(trap -> {
+            trap.update();
+        });
+        swamps.forEach(swamp -> {
+            swamp.update();
         });
         removeEntities();
     }
@@ -235,6 +265,9 @@ public class Map {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
 
     }
 
@@ -266,18 +299,27 @@ public class Map {
                 tiles[i][j].render(graphicsContext);
             }
         }
-        items.forEach(item -> {
-            item.render(graphicsContext);
+        swamps.forEach(swamp -> {
+            swamp.render(graphicsContext);
+        });
+        spikeTraps.forEach(trap -> {
+            trap.render(graphicsContext);
         });
         enemies.forEach(enemy -> {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
         bombs.forEach(bomb -> {
             bomb.render(graphicsContext);
         });
         flames.forEach(flame -> {
             flame.render(graphicsContext);
+        });
+        items.forEach(item -> {
+            item.render(graphicsContext);
         });
         scores.forEach(score -> {
             score.render(graphicsContext);
@@ -302,6 +344,10 @@ public class Map {
 
     public Bomber getPlayer() {
         return this.player;
+    }
+
+    public Bomber getPlayer2() {
+        return this.player2;
     }
 
     public ArrayList<Bomb> getBombs() {

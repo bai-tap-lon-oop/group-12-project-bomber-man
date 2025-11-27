@@ -32,6 +32,11 @@ public class Menu {
     private int state = 1;
     private boolean start = false;
 
+    // Chế độ chơi: 1 = Single Player, 2 = Two Players
+    private static int gameMode = 1;
+    private boolean modeSelected = true; // Bắt đầu = true để hiển thị menu chính trước
+    private int modeState = 1; // 1 = Single Player, 2 = Two Players
+
     public void createMenu() {
         newGame_Start = new Image("/menu/GameMenu_Start.png");
         newGame_Exit = new Image("/menu/GameMenu_Exit.png");
@@ -41,6 +46,7 @@ public class Menu {
     }
 
     public void renderMenu(GraphicsContext graphicsContext) {
+        // Màn hình menu chính
         graphicsContext.drawImage(newGame_Start, 0, 0);
         if (state == 1) {
             graphicsContext.drawImage(newGame_Start, 0, 0);
@@ -67,12 +73,52 @@ public class Menu {
             state = 0;
         }
         if (direction == DESTROYED && state == 1) {
-            start = true;
-            Sound.menu_sound.stop();
+            // Khi bấm Start, chuyển sang màn hình chọn mode
+            modeSelected = false;
         }
         if (direction == DESTROYED && state == 0) {
             Platform.exit();
         }
+    }
+
+    public void renderModeSelection(GraphicsContext graphicsContext) {
+        graphicsContext.drawImage(Background, 0, 0);
+        graphicsContext.fillText("Select Game Mode", SCALED_SIZE * 4, SCALED_SIZE * 5);
+
+        // Highlight selected mode
+        if (modeState == 1) {
+            graphicsContext.setFill(Color.RED);
+        } else {
+            graphicsContext.setFill(Color.WHITE);
+        }
+        graphicsContext.fillText("1 Player", SCALED_SIZE * 5.5, SCALED_SIZE * 7);
+
+        if (modeState == 2) {
+            graphicsContext.setFill(Color.RED);
+        } else {
+            graphicsContext.setFill(Color.WHITE);
+        }
+        graphicsContext.fillText("2 Players", SCALED_SIZE * 5.5, SCALED_SIZE * 8.5);
+        graphicsContext.setFill(Color.WHITE);
+
+        // Xử lý input
+        direction = keyInput.handleKeyInput();
+        keyInput.initialization();
+        if (direction == UP) {
+            modeState = 1;
+        }
+        if (direction == DOWN) {
+            modeState = 2;
+        }
+        if (direction == DESTROYED) {
+            gameMode = modeState;
+            modeSelected = true;
+            start = true;
+        }
+    }
+
+    public boolean isModeSelected() {
+        return modeSelected;
     }
 
     public void renderMessage(char c, GraphicsContext graphicsContext) {
@@ -113,6 +159,16 @@ public class Menu {
 
     public static int getHighscore() {
         return highscore;
+    }
+
+    public static int getGameMode() {
+        return gameMode;
+    }
+
+    public void resetModeSelection() {
+        modeSelected = true; // Reset về true để hiển thị menu chính
+        modeState = 1;
+        start = false;
     }
 
     public void renderPauseMenu(GraphicsContext graphicsContext) {

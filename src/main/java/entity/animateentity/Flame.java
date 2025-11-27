@@ -67,8 +67,15 @@ public class Flame extends AnimateEntity {
                 enemy.destroy();
             }
         });
+
+        // Kiểm tra Player 1
         if (this.isCollider(map.getPlayer()) && map.getPlayer().getImmortal() == 0 && !map.getPlayer().isDestroyed()) {
             map.getPlayer().destroy();
+        }
+
+        // Kiểm tra Player 2
+        if (map.getPlayer2() != null && this.isCollider(map.getPlayer2()) && map.getPlayer2().getImmortal() == 0 && !map.getPlayer2().isDestroyed()) {
+            map.getPlayer2().destroy();
         }
     }
 

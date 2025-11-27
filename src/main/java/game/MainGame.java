@@ -101,16 +101,29 @@ public class MainGame extends Application {
 
                 if (!choseStart || backToMenu) {
                     menu.setStart(false);
-                    menu.renderMenu(gameMenuContext);
+
+                    // Nếu chưa chọn mode, hiển thị màn hình chọn mode
+                    if (!menu.isModeSelected()) {
+                        menu.renderModeSelection(gameMenuContext);
+                    } else {
+                        // Hiển thị menu chính
+                        menu.renderMenu(gameMenuContext);
+                    }
 
                     scene2.setOnKeyPressed(keyEvent -> {
                         String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, true);
+                        // Xử lý input cho menu
+                        if (menu.keyInput instanceof input.MenuInput) {
+                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, true);
+                        }
                     });
 
                     scene2.setOnKeyReleased(keyEvent -> {
                         String code = keyEvent.getCode().toString();
-                        KeyInput.keyInput.put(code, false);
+                        // Xử lý input cho menu
+                        if (menu.keyInput instanceof input.MenuInput) {
+                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, false);
+                        }
                     });
 
                     if(menu.isStart() || countdown != 160) {
@@ -121,9 +134,15 @@ public class MainGame extends Application {
                         menu.renderMessage('s', gameMenuContext);
                     }
                     if (countdown == 0) {
+                        win = false;            // Đảm bảo không còn lưu trạng thái thắng cũ
+                        MainGame.score = 0;     // (Tùy chọn) Reset điểm nếu muốn chơi lại từ đầu
+                        PlayerInput.lastPressedKey = null;
+                        KeyInput.keyInput.clear();
+                        currentLevel = 1;
                         countdown = 160;
                         backToMenu = false;
                         choseStart = true;
+                        Sound.menu_sound.stop();
                         Sound.stage_sound.play();
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
@@ -156,6 +175,7 @@ public class MainGame extends Application {
                                     paused = false;
                                     backToMenu = true;
                                     choseStart = false;
+                                    menu.resetModeSelection();
                                     Sound.stage_sound.stop();
                                     Sound.menu_sound.play();
                                     Sound.menu_sound.loop();
@@ -214,7 +234,7 @@ public class MainGame extends Application {
                             backToMenu = false;
 
                             // ----- HIỂN THỊ TỪNG PHẦN -----
-                            if(currentLevel < (MAP_URLS.length)) {
+                            if(Map.getLevelNumber() < (MAP_URLS.length)) {
                                 menu.renderMessage('w', gameMenuContext);
                                 if (countdown <= 70) {     // 160 -> 100 = 60 frame = ~1s
                                     menu.renderMessage('c', gameMenuContext);
@@ -227,7 +247,7 @@ public class MainGame extends Application {
                             countdown--;
                         }
 
-
+                        // Khi countdown = 0 -> kiểm tra level tiếp theo
                         if (countdown == 0) {
                             countdown = 160;
 
@@ -242,14 +262,12 @@ public class MainGame extends Application {
                                 return;
                             } else {
                                 // WIN → TẢI LEVEL TIẾP THEO NHƯ MAIN GAME 2
+                                PlayerInput.lastPressedKey = null;
+                                KeyInput.keyInput.clear();
                                 try {
                                     currentLevel++;  // ⚠ Quan trọng
                                     map.createMap(MAP_URLS[currentLevel - 1]);
                                     map.resetNumber();
-
-                                    // Reset phím bấm khi sang level mới
-                                    PlayerInput.lastPressedKey = null;
-                                    KeyInput.keyInput.clear();   // nếu muốn xoá hết trạng thái phím đang giữ
 
                                     backToMenu = false;
                                     win = false;

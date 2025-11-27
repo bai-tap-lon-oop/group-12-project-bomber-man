@@ -22,12 +22,27 @@ public class Sprite {
     | Board sprites
     |--------------------------------------------------------------------------
      */
-    public static Sprite grass = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 16, 16);
-    public static Sprite[] BRICK = {
-            new Sprite(DEFAULT_SIZE, 7, 0, SpriteSheet.tiles, 16, 16),
-    };
     public static Sprite wall = new Sprite(DEFAULT_SIZE, 5, 0, SpriteSheet.tiles, 16, 16);
+    public static Sprite grass = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 16, 16);
     public static Sprite portal = new Sprite(DEFAULT_SIZE, 4, 0, SpriteSheet.tiles, 14, 14);
+    public static Sprite[] BRICK = {new Sprite(DEFAULT_SIZE, 7, 0, SpriteSheet.tiles, 16, 16),};
+    /*
+    |--------------------------------------------------------------------------
+    | Spike Trap Sprites
+    |--------------------------------------------------------------------------
+     */
+    public static Sprite spike_trap = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 14, 14);
+    public static Sprite[] spike_trap_active = {
+            new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
+            new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swamp Sprites
+    |--------------------------------------------------------------------------
+     */
+    public static Sprite swamp = new Sprite(DEFAULT_SIZE, 5, 1, SpriteSheet.tiles, 16, 16);
 
     /*
     |--------------------------------------------------------------------------
