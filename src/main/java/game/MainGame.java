@@ -195,7 +195,9 @@ public class MainGame extends Application {
                         // ===== XỬ LÝ LOSE =====
                         if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
                             if(countdown == 160) {
+                                Sound.stage_sound.stop();
                                 Sound.game_over.play();
+
                                 stage.setScene(scene2);
                             }
                             backToMenu = false;
@@ -207,14 +209,17 @@ public class MainGame extends Application {
                         if ((backToMenu && win) || (countdown != 160 && win)) {
 
                             if (countdown == 160) {
+                                Sound.stage_sound.stop();
                                 Sound.level_complete.play();   // Âm thắng level
-                                stage.setScene(scene2);        // Chuyển về màn menu
+                                stage.setScene(scene2);// Chuyển về màn menu
                             }
+
 
                             backToMenu = false;
 
                             // ----- HIỂN THỊ TỪNG PHẦN -----
                             if(currentLevel < (MAP_URLS.length)) {
+                                Sound.stage_sound.play();
                                 menu.renderMessage('w', gameMenuContext);
                                 if (countdown <= 70) {     // 160 -> 100 = 60 frame = ~1s
                                     menu.renderMessage('c', gameMenuContext);
