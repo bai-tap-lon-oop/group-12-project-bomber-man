@@ -37,7 +37,7 @@ public class MainGame extends Application {
 
     private final double FPS = 120.0;
     private int countdown;
-    public static int currentLevel = 0;
+    public static int currentLevel = 1;
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;
@@ -128,7 +128,7 @@ public class MainGame extends Application {
                         Sound.stage_sound.loop();
                         stage.setScene(scene);
                         try {
-                            map.createMap(MAP_URLS[0]);
+                            map.createMap(MAP_URLS[currentLevel - 1]);
                             map.resetNumber();
                         } catch (FileNotFoundException e) {
                             System.out.println(e);
@@ -204,44 +204,70 @@ public class MainGame extends Application {
                         }
 
                         // ===== XỬ LÝ WIN =====
-                        if((backToMenu == true && win == true) || (countdown != 160 && win == true)) {
-                            if(countdown == 160) {
-                                Sound.level_complete.play();
-                                stage.setScene(scene2);
+                        if ((backToMenu && win) || (countdown != 160 && win)) {
+
+                            if (countdown == 160) {
+                                Sound.level_complete.play();   // Âm thắng level
+                                stage.setScene(scene2);        // Chuyển về màn menu
                             }
+
                             backToMenu = false;
-                            if (Map.getLevelNumber() >= MAP_URLS.length) {
-                                menu.renderMessage('v', gameMenuContext);
-                            } else {
+
+                            // ----- HIỂN THỊ TỪNG PHẦN -----
+                            if(currentLevel < (MAP_URLS.length)) {
                                 menu.renderMessage('w', gameMenuContext);
+                                if (countdown <= 70) {     // 160 -> 100 = 60 frame = ~1s
+                                    menu.renderMessage('c', gameMenuContext);
+                                }
                             }
+                            else {
+                                menu.renderMessage('v', gameMenuContext);
+                            }
+
                             countdown--;
                         }
 
-                        // Khi countdown = 0 -> kiểm tra level tiếp theo
+
                         if (countdown == 0) {
                             countdown = 160;
-                            if (win == true && Map.getLevelNumber() < MAP_URLS.length) {
-                                // Load level tiếp theo
-                                win = false;
-                                backToMenu = false;
-                                Sound.level_start.play();
-                                stage.setScene(scene);  // Chuyển về game scene
-                                try {
-                                    map.createMap(MAP_URLS[Map.getLevelNumber()]);
-                                    map.resetNumber();
-                                } catch (FileNotFoundException e) {
-                                    System.out.println(e);
-                                }
-                            } else {
+
+                            if (!win) {
+                                // Trở về menu khi thua
                                 choseStart = false;
-                                backToMenu = true;
-                                win = false;
                                 Sound.stage_sound.stop();
                                 Sound.menu_sound.play();
                                 Sound.menu_sound.loop();
+                                backToMenu = true;
+                                win = false;
+                                return;
+                            } else {
+                                // WIN → TẢI LEVEL TIẾP THEO NHƯ MAIN GAME 2
+                                try {
+                                    currentLevel++;  // ⚠ Quan trọng
+                                    map.createMap(MAP_URLS[currentLevel - 1]);
+                                    map.resetNumber();
+
+                                    // Reset phím bấm khi sang level mới
+                                    PlayerInput.lastPressedKey = null;
+                                    KeyInput.keyInput.clear();   // nếu muốn xoá hết trạng thái phím đang giữ
+
+                                    backToMenu = false;
+                                    win = false;
+                                    stage.setScene(scene);
+                                } catch (Exception e) {
+                                    // Hết level → quay lại menu
+                                    choseStart = false;
+                                    Sound.stage_sound.stop();
+                                    Sound.menu_sound.play();
+                                    Sound.menu_sound.loop();
+                                    backToMenu = true;
+                                    win = false;
+                                    stage.setScene(scene2);
+                                    currentLevel = 1;
+                                }
                             }
                         }
+
 
                     }
                 }

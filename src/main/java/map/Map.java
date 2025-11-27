@@ -211,7 +211,7 @@ public class Map {
             graphicsContext.fillText("Time: " + String.valueOf(time), 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
             MainGame.setBackToMenu(true);
         }
-        graphicsContext.fillText("Stage: " + String.valueOf(levelNumber), 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
+        graphicsContext.fillText("Stage: " + String.valueOf(MainGame.currentLevel), 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
         graphicsContext.fillText("Life: " + String.valueOf(player.getLife()), 10.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
         if(player.getLife() == 0) {
             MainGame.setBackToMenu(true);
