@@ -197,11 +197,21 @@ public class MainGame extends Application {
                                 return;
                             }
 
+                            // Player 1 input (WASD + SPACE)
                             KeyInput.keyInput.put(code, true);
                             PlayerInput.lastPressedKey = code;
+
+                            // Player 2 input (Arrow keys + numpad 0)
+                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                                input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
+                                p2Input.setKeyPressed(code, true);
+                                p2Input.lastPressedKey = code; // Cập nhật phím cuối cùng được nhấn
+                            }
                         });
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
+                            
+                            // Player 1 input
                             KeyInput.keyInput.put(code, false);
                             if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
                             else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
@@ -210,6 +220,19 @@ public class MainGame extends Application {
                             else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
                             else PlayerInput.lastPressedKey = null;
 
+                            // Player 2 input (Arrow keys + numpad 0)
+                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                                input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
+                                p2Input.setKeyPressed(code, false);
+                                
+                                // Tìm phím còn đang được nhấn
+                                if (p2Input.isKeyPressed("UP")) p2Input.lastPressedKey = "UP";
+                                else if (p2Input.isKeyPressed("DOWN")) p2Input.lastPressedKey = "DOWN";
+                                else if (p2Input.isKeyPressed("LEFT")) p2Input.lastPressedKey = "LEFT";
+                                else if (p2Input.isKeyPressed("RIGHT")) p2Input.lastPressedKey = "RIGHT";
+                                else if (p2Input.isKeyPressed("NUMPAD0")) p2Input.lastPressedKey = "NUMPAD0";
+                                else p2Input.lastPressedKey = null;
+                            }
                         });
 
                         // ===== XỬ LÝ LOSE =====

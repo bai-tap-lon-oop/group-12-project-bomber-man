@@ -1,33 +1,33 @@
 package input;
 
 import java.util.HashMap;
-import java.util.Set;
 import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class Player2Input implements KeyInput {
     private HashMap<String, Boolean> keyInput = new HashMap<>();
+    public String lastPressedKey; // Lưu phím cuối cùng được nhấn
 
     public void initialization() {
         keyInput.put("LEFT", false);
         keyInput.put("RIGHT", false);
         keyInput.put("UP", false);
         keyInput.put("DOWN", false);
-        keyInput.put("SPACE", false);
+        keyInput.put("NUMPAD0", false);
+        lastPressedKey = null;
     }
 
     @Override
     public DIRECTION handleKeyInput() {
-        Set<String> keySet = keyInput.keySet();
-        for (String code : keySet) {
-            if (keyInput.get(code)) {
-                // Set key điều khiển hướng di chuyển của player 2
-                if (code.equals("UP")) return UP;
-                else if(code.equals("DOWN")) return DOWN;
-                else if(code.equals("RIGHT")) return RIGHT;
-                else if(code.equals("LEFT")) return LEFT;
-                else if(code.equals("SPACE")) return PLACEBOMB;
-            }
+        // Tương tự PlayerInput - chỉ xử lý phím cuối cùng được nhấn
+        if (lastPressedKey == null) return NONE;
+
+        switch (lastPressedKey) {
+            case "UP": return UP;
+            case "DOWN": return DOWN;
+            case "LEFT": return LEFT;
+            case "RIGHT": return RIGHT;
+            case "NUMPAD0": return PLACEBOMB;
         }
         return NONE;
     }
@@ -36,5 +36,10 @@ public class Player2Input implements KeyInput {
         if (keyInput.containsKey(key)) {
             keyInput.put(key, pressed);
         }
+    }
+    
+    // Getter để truy cập keyInput từ bên ngoài
+    public boolean isKeyPressed(String key) {
+        return keyInput.getOrDefault(key, false);
     }
 }

@@ -108,8 +108,9 @@ public class Bomber extends Character {
                 }
             }
         });
+        // Chỉ set block cho bomb mà player này đã đặt và đã ra khỏi bomb đó
         map.getBombs().forEach(bomb -> {
-            if (!this.isCollider(bomb)) {
+            if (bomb.getOwner() == this && !this.isCollider(bomb)) {
                 bomb.setBlock(true);
             }
         });
