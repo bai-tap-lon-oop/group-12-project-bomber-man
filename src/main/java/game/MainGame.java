@@ -128,6 +128,7 @@ public class MainGame extends Application {
 
                     if(menu.isStart() || countdown != 160) {
                         if(countdown == 160) {
+                            Sound.menu_sound.stop();
                             Sound.level_start.play();
                         }
                         countdown--;
