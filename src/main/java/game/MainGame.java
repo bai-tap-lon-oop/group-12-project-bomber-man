@@ -1,6 +1,8 @@
 package game;
 
+import com.sun.media.jfxmedia.events.PlayerEvent;
 import input.KeyInput;
+import input.Player2Input;
 import input.PlayerInput;
 import sound.Sound;
 import javafx.animation.AnimationTimer;
@@ -28,6 +30,8 @@ public class MainGame extends Application {
     private static boolean win = false;
     private static boolean paused = false;  // Trạng thái pause game
 
+    private PlayerInput playerInput = new PlayerInput();
+    private Player2Input player2Input = new Player2Input();
     private GraphicsContext graphicsContext;
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
@@ -214,12 +218,7 @@ public class MainGame extends Application {
 
                             // Player 1 input
                             KeyInput.keyInput.put(code, false);
-                            if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
-                            else if (KeyInput.keyInput.getOrDefault("A", false)) PlayerInput.lastPressedKey = "A";
-                            else if (KeyInput.keyInput.getOrDefault("S", false)) PlayerInput.lastPressedKey = "S";
-                            else if (KeyInput.keyInput.getOrDefault("D", false)) PlayerInput.lastPressedKey = "D";
-                            else if (KeyInput.keyInput.getOrDefault("SPACE", false)) PlayerInput.lastPressedKey = "SPACE";
-                            else PlayerInput.lastPressedKey = null;
+                            playerInput.updateLastPressedKeyFromHeldKeys();
 
                             // Player 2 input (Arrow keys + numpad 0)
                             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {

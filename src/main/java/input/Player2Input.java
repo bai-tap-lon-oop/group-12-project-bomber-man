@@ -42,4 +42,13 @@ public class Player2Input implements KeyInput {
     public boolean isKeyPressed(String key) {
         return keyInput.getOrDefault(key, false);
     }
+
+    public void updateLastPressedKeyFromHeldKeys() {
+        if (KeyInput.keyInput.getOrDefault("UP", false)) lastPressedKey = "UP";
+        else if (KeyInput.keyInput.getOrDefault("LEFT", false)) lastPressedKey = "LEFT";
+        else if (KeyInput.keyInput.getOrDefault("DOWN", false)) lastPressedKey = "DOWN";
+        else if (KeyInput.keyInput.getOrDefault("RIGHT", false)) lastPressedKey = "RIGHT";
+        else if (KeyInput.keyInput.getOrDefault("NUMPAD0", false)) lastPressedKey = "NUMPAD0";
+        else lastPressedKey = null;
+    }
 }

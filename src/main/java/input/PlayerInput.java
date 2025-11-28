@@ -39,4 +39,14 @@ public class PlayerInput implements KeyInput {
             keyInput.put(key, pressed);
         }
     }
+
+    public void updateLastPressedKeyFromHeldKeys() {
+        if (KeyInput.keyInput.getOrDefault("W", false)) lastPressedKey = "W";
+        else if (KeyInput.keyInput.getOrDefault("A", false)) lastPressedKey = "A";
+        else if (KeyInput.keyInput.getOrDefault("S", false)) lastPressedKey = "S";
+        else if (KeyInput.keyInput.getOrDefault("D", false)) lastPressedKey = "D";
+        else if (KeyInput.keyInput.getOrDefault("SPACE", false)) lastPressedKey = "SPACE";
+        else lastPressedKey = null;
+    }
+
 }
