@@ -31,7 +31,6 @@ public class MainGame extends Application {
     private static boolean paused = false;  // Trạng thái pause game
 
     private PlayerInput playerInput = new PlayerInput();
-    private Player2Input player2Input = new Player2Input();
     private GraphicsContext graphicsContext;
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
@@ -224,14 +223,7 @@ public class MainGame extends Application {
                             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
                                 input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
                                 p2Input.setKeyPressed(code, false);
-
-                                // Tìm phím còn đang được nhấn
-                                if (p2Input.isKeyPressed("UP")) p2Input.lastPressedKey = "UP";
-                                else if (p2Input.isKeyPressed("DOWN")) p2Input.lastPressedKey = "DOWN";
-                                else if (p2Input.isKeyPressed("LEFT")) p2Input.lastPressedKey = "LEFT";
-                                else if (p2Input.isKeyPressed("RIGHT")) p2Input.lastPressedKey = "RIGHT";
-                                else if (p2Input.isKeyPressed("NUMPAD0")) p2Input.lastPressedKey = "NUMPAD0";
-                                else p2Input.lastPressedKey = null;
+                                p2Input.updateLastPressedKeyFromHeldKeys();
                             }
                         });
 
