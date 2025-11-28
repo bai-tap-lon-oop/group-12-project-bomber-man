@@ -55,6 +55,14 @@ public class Map {
     }
 
     private void resetEntities() {
+        if (enemies != null) enemies.clear();
+        if (bombs != null) bombs.clear();
+        if (flames != null) flames.clear();
+        if (items != null) items.clear();
+        if (scores != null) scores.clear();
+        if (spikeTraps != null) spikeTraps.clear();
+        if (swamps != null) swamps.clear();
+
         tiles = new Entity[HEIGHT][WIDTH];
         enemies = new ArrayList<>();
         bombs = new ArrayList<>();
@@ -84,6 +92,7 @@ public class Map {
         levelNumber = _string.charAt(0) - '0';
         resetEntities();
         revival = false;
+        player = null;
         player2 = null; // Reset player2 khi tạo map mới
         for (int i = 0; i < HEIGHT; i++) {
             String string = scanner.nextLine();

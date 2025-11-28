@@ -46,7 +46,7 @@ public class MainGame extends Application {
     public static long time;
     private long startTime;
     private long lastTime;
-    private boolean choseStart = false;
+    private static boolean choseStart = false;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -175,13 +175,7 @@ public class MainGame extends Application {
                                     paused = false;
                                     stage.setScene(scene);
                                 } else if (code.equals("Q")) {
-                                    paused = false;
-                                    backToMenu = true;
-                                    choseStart = false;
-                                    menu.resetModeSelection();
-                                    Sound.stage_sound.stop();
-                                    Sound.menu_sound.play();
-                                    Sound.menu_sound.loop();
+                                    gameRestart();
                                 }
                             });
                             return;  // Skip game update khi pause
@@ -227,7 +221,7 @@ public class MainGame extends Application {
                         });
 
                         // ===== XỬ LÝ LOSE =====
-                        if((backToMenu == true && win == false) || (countdown != 160 && win == false)) {
+                        if((backToMenu && !win) || (countdown != 160 && !win)) {
                             if(countdown == 160) {
                                 Sound.game_over.play();
                                 stage.setScene(scene2);
@@ -256,6 +250,7 @@ public class MainGame extends Application {
                             }
                             else {
                                 menu.renderMessage('v', gameMenuContext);
+                                win = false;
                             }
 
                             countdown--;
@@ -291,11 +286,7 @@ public class MainGame extends Application {
                                     stage.setScene(scene);
                                 } catch (Exception e) {
                                     // Hết level → quay lại menu
-                                    choseStart = false;
-                                    Sound.stage_sound.stop();
-                                    Sound.menu_sound.play();
-                                    Sound.menu_sound.loop();
-                                    backToMenu = true;
+                                    gameRestart();
                                     win = false;
                                     stage.setScene(scene2);
                                     currentLevel = 1;
@@ -343,5 +334,15 @@ public class MainGame extends Application {
 
     public static void setWin(boolean win) {
         MainGame.win = win;
+    }
+
+    public static void gameRestart() {
+        paused = false;
+        backToMenu = true;
+        choseStart = false;
+        menu.resetModeSelection();
+        Sound.stage_sound.stop();
+        Sound.menu_sound.play();
+        Sound.menu_sound.loop();
     }
 }
