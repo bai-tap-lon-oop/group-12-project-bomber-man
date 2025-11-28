@@ -305,6 +305,9 @@ public class Map {
         spikeTraps.forEach(trap -> {
             trap.render(graphicsContext);
         });
+        items.forEach(item -> {
+            item.render(graphicsContext);
+        });
         enemies.forEach(enemy -> {
             enemy.render(graphicsContext);
         });
@@ -317,9 +320,6 @@ public class Map {
         });
         flames.forEach(flame -> {
             flame.render(graphicsContext);
-        });
-        items.forEach(item -> {
-            item.render(graphicsContext);
         });
         scores.forEach(score -> {
             score.render(graphicsContext);

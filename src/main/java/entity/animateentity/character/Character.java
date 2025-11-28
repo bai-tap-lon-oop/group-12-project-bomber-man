@@ -79,42 +79,47 @@ public abstract class Character extends AnimateEntity {
         isCollision = false;
         pixelX += this.velocityX;
         pixelY += this.velocityY;
+
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
+
                 Entity entity = map.getTile(j, i);
+
+                // Block collision (Wall, Brick, Portal, etc.)
                 if (entity.isBlock() && this.isCollider(entity)) {
                     isCollision = true;
                 }
 
-                if (this instanceof Enemy && entity instanceof entity.staticentity.Item) {
-                    if (this.isCollider(entity)) {
-                        isCollision = true;
-                    }
-                }
+                // Bomber vào portal
+                if (this instanceof Bomber && this.isCollider(entity)
+                        && entity instanceof Portal
+                        && ((Portal) entity).isAccessAble()
+                        && entity.getTileX() == j && entity.getTileY() == i) {
 
-                if (this instanceof Bomber && this.isCollider(entity) && entity instanceof Portal && ((Portal) entity).isAccessAble() && entity.getTileX() == j && entity.getTileY() == i) {
                     MainGame.setBackToMenu(true);
                     MainGame.setWin(true);
                 }
             }
         }
+
         map.getBombs().forEach(bomb -> {
-            Entity entity1 = bomb;
-            if (entity1.isBlock() && this.isCollider(entity1)) {
+            if (bomb.isBlock() && this.isCollider(bomb)) {
                 if (immortal == 0) {
                     isCollision = true;
                 }
             }
-            if(this.isCollider(entity1) && this instanceof Enemy) {
+            if (this instanceof Enemy && this.isCollider(bomb)) {
                 if (immortal == 0) {
                     isCollision = true;
                 }
             }
         });
+
         stand = (velocityX == 0 && velocityY == 0) || isCollision;
         pixelX -= this.velocityX;
         pixelY -= this.velocityY;
     }
+
 
     @Override
     public void update() {
