@@ -40,7 +40,7 @@ public class PlayerInput implements KeyInput {
         }
     }
 
-    public void updateLastPressedKeyFromHeldKeys() {
+    public static void updateLastPressedKeyFromHeldKeys() {
         if (KeyInput.keyInput.getOrDefault("W", false)) lastPressedKey = "W";
         else if (KeyInput.keyInput.getOrDefault("A", false)) lastPressedKey = "A";
         else if (KeyInput.keyInput.getOrDefault("S", false)) lastPressedKey = "S";

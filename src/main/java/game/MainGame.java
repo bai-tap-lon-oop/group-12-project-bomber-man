@@ -30,7 +30,6 @@ public class MainGame extends Application {
     private static boolean win = false;
     private static boolean paused = false;  // Trạng thái pause game
 
-    private PlayerInput playerInput = new PlayerInput();
     private GraphicsContext graphicsContext;
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
@@ -207,9 +206,9 @@ public class MainGame extends Application {
 
                             // Player 2 input (Arrow keys + numpad 0)
                             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                                input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
-                                p2Input.setKeyPressed(code, true);
-                                p2Input.lastPressedKey = code; // Cập nhật phím cuối cùng được nhấn
+                                // PLAYER 2 - y như Player 1
+                                KeyInput.keyInput.put(code, true);
+                                Player2Input.lastPressedKey = code;
                             }
                         });
                         scene.setOnKeyReleased(keyEvent -> {
@@ -217,13 +216,13 @@ public class MainGame extends Application {
 
                             // Player 1 input
                             KeyInput.keyInput.put(code, false);
-                            playerInput.updateLastPressedKeyFromHeldKeys();
+                            PlayerInput.updateLastPressedKeyFromHeldKeys();
 
                             // Player 2 input (Arrow keys + numpad 0)
                             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                                input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
-                                p2Input.setKeyPressed(code, false);
-                                p2Input.updateLastPressedKeyFromHeldKeys();
+                                KeyInput.keyInput.put(code, false);
+                                Player2Input.updateLastPressedKeyFromHeldKeys();
+
                             }
                         });
 
@@ -278,6 +277,9 @@ public class MainGame extends Application {
                             } else {
                                 // WIN → TẢI LEVEL TIẾP THEO NHƯ MAIN GAME 2
                                 PlayerInput.lastPressedKey = null;
+                                if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                                    Player2Input.lastPressedKey = null;
+                                }
                                 KeyInput.keyInput.clear();
                                 try {
                                     currentLevel++;  // Quan trọng
