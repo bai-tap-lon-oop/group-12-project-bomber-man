@@ -26,17 +26,14 @@ public class MainGame extends Application {
     private final int countDown_Max = 160;
     private final int continue_delay = 70;
     
-    // Static - chỉ những gì thực sự cần thiết
     public static int currentLevel = 1;
-    public static long time;
+    public static long time; 
     
-    // Private static - truy cập qua getter/setter
     private static Map map = Map.getGameMap();
     private static int score = 0;
     private static boolean backToMenu = false;
     private static boolean win = false;
     
-    // Instance  
     private Menu menu = new Menu();
     private boolean paused = false;
     private boolean gameStarted = false;
