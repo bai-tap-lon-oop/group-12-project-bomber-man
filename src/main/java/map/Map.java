@@ -10,7 +10,6 @@ import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
-import entity.staticentity.StaticEntity;
 import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;

@@ -114,6 +114,7 @@ public class Bomber extends Character {
                 bomb.setBlock(true);
             }
         });
+        
         map.getItems().forEach(item -> {
             if (this.isCollider(item)) {
                 Sound.get_item.play();
@@ -126,15 +127,12 @@ public class Bomber extends Character {
                     map.getWalls().forEach(wall -> {
                         wall.setBlock(false);
                         wall.setSprite(Sprite.grass);
-                        map.getEnemies().forEach(enemy -> {
-                            enemy.destroy();
-                        });
                     });
                 }
-                item.delete();// Xóa vật phẩm khỏi map
+                item.delete();
             }
         });
-        //Khi Bomber đi vào góc tường, sẽ tự động "trượt" thay vì bị kẹt cứng.
+        // Khi Bomber đi vào góc tường, sẽ tự động "trượt" thay vì bị kẹt cứng.
         if (isCollision) {
             for (int i = -8 - speed; i <= 8 + speed; i++) {
                 switch (direction) {

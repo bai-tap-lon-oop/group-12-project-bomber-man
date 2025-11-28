@@ -17,6 +17,7 @@ public abstract class Path {
     protected Map map;
     protected Bomber player;
     protected Enemy enemy;
+    
     private class Vertex {
         int x;
         int y;

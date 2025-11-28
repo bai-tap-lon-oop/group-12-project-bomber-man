@@ -1,6 +1,5 @@
 package game;
 
-import com.sun.media.jfxmedia.events.PlayerEvent;
 import input.KeyInput;
 import input.Player2Input;
 import input.PlayerInput;
@@ -23,37 +22,44 @@ import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
 
 public class MainGame extends Application {
+    // Constants
+    private final int countDown_Max = 160;
+    private final int continue_delay = 70;
+    
+    // Static - chỉ những gì thực sự cần thiết
+    public static int currentLevel = 1;
+    public static long time;
+    
+    // Private static - truy cập qua getter/setter
     private static Map map = Map.getGameMap();
-    private static Menu menu = new Menu();
     private static int score = 0;
     private static boolean backToMenu = false;
     private static boolean win = false;
-    private static boolean paused = false;  // Trạng thái pause game
+    
+    // Instance  
+    private Menu menu = new Menu();
+    private boolean paused = false;
+    private boolean gameStarted = false;
 
     private GraphicsContext graphicsContext;
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
-    private Canvas canvas;
-    private Canvas topInfo;
-    private Canvas gameMenu;
 
     private final double FPS = 120.0;
-    private int countdown;
-    public static int currentLevel = 1;
+    private int countDown;
     private final long timePerFrame = (long) (1000000000 / FPS);
     private long lastFrame;
     private int frames;
-    public static long time;
     private long startTime;
     private long lastTime;
-    private static boolean choseStart = false;
 
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle(GAME_TITLE);
-        canvas = new Canvas(WIDTH_SCREEN * SCALED_SIZE, HEIGHT_SCREEN * SCALED_SIZE);
-        topInfo = new Canvas(WIDTH_SCREEN * SCALED_SIZE, UP_BORDER * SCALED_SIZE);
-        gameMenu = new Canvas(WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
+        
+        Canvas canvas = new Canvas(WIDTH_SCREEN * SCALED_SIZE, HEIGHT_SCREEN * SCALED_SIZE);
+        Canvas topInfo = new Canvas(WIDTH_SCREEN * SCALED_SIZE, UP_BORDER * SCALED_SIZE);
+        Canvas gameMenu = new Canvas(WIDTH_SCREEN * SCALED_SIZE, (HEIGHT_SCREEN + UP_BORDER) * SCALED_SIZE);
 
         graphicsContext = canvas.getGraphicsContext2D();
         topInfoContext = topInfo.getGraphicsContext2D();
@@ -93,7 +99,7 @@ public class MainGame extends Application {
         Sound.menu_sound.play();
         Sound.menu_sound.loop();
 
-        countdown = 160; // Countdown cho hiệu ứng chuyển cảnh
+        countDown = countDown_Max; // Countdown cho hiệu ứng chuyển cảnh
 
         // ===== GAME LOOP - ANIMATION TIMER =====
         AnimationTimer timer = new AnimationTimer() {
@@ -101,219 +107,204 @@ public class MainGame extends Application {
             public void handle(long currentTime) {
                 long now = currentTime - startTime;
 
-                if (!choseStart || backToMenu) {
-                    menu.setStart(false);
-
-                    // Nếu chưa chọn mode, hiển thị màn hình chọn mode
-                    if (!menu.isModeSelected()) {
-                        menu.renderModeSelection(gameMenuContext);
-                    } else {
-                        // Hiển thị menu chính
-                        menu.renderMenu(gameMenuContext);
-                    }
-
-                    scene2.setOnKeyPressed(keyEvent -> {
-                        String code = keyEvent.getCode().toString();
-                        // Xử lý input cho menu
-                        if (menu.keyInput instanceof input.MenuInput) {
-                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, true);
-                        }
-                    });
-
-                    scene2.setOnKeyReleased(keyEvent -> {
-                        String code = keyEvent.getCode().toString();
-                        // Xử lý input cho menu
-                        if (menu.keyInput instanceof input.MenuInput) {
-                            ((input.MenuInput)menu.keyInput).setKeyPressed(code, false);
-                        }
-                    });
-
-                    if(menu.isStart() || countdown != 160) {
-                        if(countdown == 160) {
-                            Sound.menu_sound.stop();
-                            Sound.level_start.play();
-                        }
-                        countdown--;
-                        menu.renderMessage('s', gameMenuContext);
-                    }
-                    if (countdown == 0) {
-                        win = false;            // Đảm bảo không còn lưu trạng thái thắng cũ
-                        score = 0;     // (Tùy chọn) Reset điểm nếu muốn chơi lại từ đầu
-                        PlayerInput.lastPressedKey = null;
-                        KeyInput.keyInput.clear();
-                        currentLevel = 1;
-                        countdown = 160;
-                        backToMenu = false;
-                        choseStart = true;
-                        Sound.menu_sound.stop();
-                        Sound.stage_sound.play();
-                        Sound.stage_sound.loop();
-                        stage.setScene(scene);
-                        try {
-                            map.createMap(MAP_URLS[currentLevel - 1]);
-                            map.resetNumber();
-                        } catch (FileNotFoundException e) {
-                            System.out.println(e);
-                        }
-                    }
+                if (!gameStarted || backToMenu) {
+                    handleMenuState(scene, scene2, stage);
                 } else {
                     // ===== GAME LOOP CHÍNH =====
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
 
-                        // ===== XỬ LÝ PAUSE MENU =====
                         if (paused) {
-                            menu.renderPauseMenu(gameMenuContext);
-
-                            if (stage.getScene() != scene2) {
-                                stage.setScene(scene2);
-                            }
-
-                            scene2.setOnKeyPressed(keyEvent -> {
-                                String code = keyEvent.getCode().toString();
-                                if (code.equals("ESCAPE")) {
-                                    paused = false;
-                                    stage.setScene(scene);
-                                } else if (code.equals("Q")) {
-                                    gameRestart();
-                                }
-                            });
-                            return;  // Skip game update khi pause
+                            handlePauseState(scene, scene2, stage);
+                            return;
                         }
 
-                        map.updateMap();
-                        map.renderMap(graphicsContext);
-                        map.renderTopInfo(topInfoContext);
-
-                        scene.setOnKeyPressed(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-
-                            // ESC để pause
-                            if (code.equals("ESCAPE")) {
-                                paused = true;
-                                return;
-                            }
-
-                            // Player 1 input (WASD + SPACE)
-                            KeyInput.keyInput.put(code, true);
-                            PlayerInput.lastPressedKey = code;
-
-                            // Player 2 input (Arrow keys + numpad 0)
-                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                                // PLAYER 2 - y như Player 1
-                                KeyInput.keyInput.put(code, true);
-                                Player2Input.lastPressedKey = code;
-                            }
-                        });
-                        scene.setOnKeyReleased(keyEvent -> {
-                            String code = keyEvent.getCode().toString();
-
-                            // Player 1 input
-                            KeyInput.keyInput.put(code, false);
-                            PlayerInput.updateLastPressedKeyFromHeldKeys();
-
-                            // Player 2 input (Arrow keys + numpad 0)
-                            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                                KeyInput.keyInput.put(code, false);
-                                Player2Input.updateLastPressedKeyFromHeldKeys();
-
-                            }
-                        });
-
-                        // ===== XỬ LÝ LOSE =====
-                        if((backToMenu && !win) || (countdown != 160 && !win)) {
-                            if(countdown == 160) {
-                                Sound.game_over.play();
-                                stage.setScene(scene2);
-                            }
-                            backToMenu = false;
-                            menu.renderMessage('l', gameMenuContext);  // Hiển "Game Over"
-                            countdown--;
-                        }
-
-                        // ===== XỬ LÝ WIN =====
-                        if ((backToMenu && win) || (countdown != 160 && win)) {
-
-                            if (countdown == 160) {
-                                Sound.level_complete.play();   // Âm thắng level
-                                stage.setScene(scene2);        // Chuyển về màn menu
-                            }
-
-                            backToMenu = false;
-
-                            // ----- HIỂN THỊ TỪNG PHẦN -----
-                            if(currentLevel < (MAP_URLS.length)) {
-                                menu.renderMessage('w', gameMenuContext);
-                                if (countdown <= 70) {
-                                    menu.renderMessage('c', gameMenuContext);
-                                }
-                            }
-                            else {
-                                menu.renderMessage('v', gameMenuContext);
-                                win = false;
-                            }
-
-                            countdown--;
-                        }
-
-                        // Khi countdown = 0 -> kiểm tra level tiếp theo
-                        if (countdown == 0) {
-                            countdown = 160;
-
-                            if (!win) {
-                                // Trở về menu khi thua
-                                choseStart = false;
-                                Sound.stage_sound.stop();
-                                Sound.menu_sound.play();
-                                Sound.menu_sound.loop();
-                                backToMenu = true;
-                                win = false;
-                                return;
-                            } else {
-                                // WIN → TẢI LEVEL TIẾP THEO NHƯ MAIN GAME 2
-                                PlayerInput.lastPressedKey = null;
-                                if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                                    Player2Input.lastPressedKey = null;
-                                }
-                                KeyInput.keyInput.clear();
-                                try {
-                                    currentLevel++;  // Quan trọng
-                                    map.createMap(MAP_URLS[currentLevel - 1]);
-                                    map.resetNumber();
-
-                                    backToMenu = false;
-                                    win = false;
-                                    stage.setScene(scene);
-                                } catch (Exception e) {
-                                    // Hết level → quay lại menu
-                                    gameRestart();
-                                    win = false;
-                                    stage.setScene(scene2);
-                                    currentLevel = 1;
-                                }
-                            }
-                        }
-
-
+                        handleGamePlaying(scene, scene2, stage);
                     }
                 }
 
                 // ===== TÍNH FPS THỰC TẾ =====
                 frames++;
                 if (now - lastTime >= 1000000000) {
-                    // Hiển thị FPS trên title bar
                     stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
                     frames = 0;
                     lastTime = now;
                 }
 
-                // Cập nhật biến time cho animation (chia 60 triệu để chuyển từ nano sang đơn vị phù hợp)
                 time = (long) ((currentTime - startTime)) / 60000000 + 1;
             }
         };
 
-        // Bắt đầu timer (bắt đầu game loop)
         timer.start();
+    }
+
+    // Xử lý trạng thái menu
+    private void handleMenuState(Scene scene, Scene scene2, Stage stage) {
+        menu.setStart(false);
+
+        if (!menu.isModeSelected()) {
+            menu.renderModeSelection(gameMenuContext);
+        } else {
+            menu.renderMenu(gameMenuContext);
+        }
+
+        scene2.setOnKeyPressed(keyEvent -> {
+            String code = keyEvent.getCode().toString();
+            if (menu.keyInput instanceof input.MenuInput) {
+                ((input.MenuInput) menu.keyInput).setKeyPressed(code, true);
+            }
+        });
+
+        scene2.setOnKeyReleased(keyEvent -> {
+            String code = keyEvent.getCode().toString();
+            if (menu.keyInput instanceof input.MenuInput) {
+                ((input.MenuInput) menu.keyInput).setKeyPressed(code, false);
+            }
+        });
+
+        if (menu.isStart() || countDown != countDown_Max) {
+            if (countDown == countDown_Max) {
+                Sound.menu_sound.stop();
+                Sound.level_start.play();
+            }
+            countDown--;
+            menu.renderMessage('s', gameMenuContext);
+        }
+
+        if (countDown == 0) {
+            win = false;
+            score = 0;
+            PlayerInput.lastPressedKey = null;
+            KeyInput.keyInput.clear();
+            currentLevel = 1;
+            countDown = countDown_Max;
+            backToMenu = false;
+            gameStarted = true;
+            Sound.menu_sound.stop();
+            Sound.stage_sound.play();
+            Sound.stage_sound.loop();
+            // Tạo map TRƯỚC khi chuyển scene để tránh NullPointerException
+            try {
+                map.createMap(MAP_URLS[currentLevel - 1]);
+                map.resetNumber();
+            } catch (FileNotFoundException e) {
+                System.out.println(e);
+            }
+            stage.setScene(scene);
+        }
+    }
+
+    // Xử lý trạng thái pause
+    private void handlePauseState(Scene scene, Scene scene2, Stage stage) {
+        menu.renderPauseMenu(gameMenuContext);
+
+        if (stage.getScene() != scene2) {
+            stage.setScene(scene2);
+        }
+
+        scene2.setOnKeyPressed(keyEvent -> {
+            String code = keyEvent.getCode().toString();
+            if (code.equals("ESCAPE")) {
+                paused = false;
+                stage.setScene(scene);
+            } else if (code.equals("Q")) {
+                gameRestart();
+            }
+        });
+    }
+
+    // Xử lý gameplay chính
+    private void handleGamePlaying(Scene scene, Scene scene2, Stage stage) {
+        map.updateMap();
+        map.renderMap(graphicsContext);
+        map.renderTopInfo(topInfoContext);
+
+        scene.setOnKeyPressed(keyEvent -> {
+            String code = keyEvent.getCode().toString();
+            if (code.equals("ESCAPE")) {
+                paused = true;
+                return;
+            }
+            KeyInput.keyInput.put(code, true);
+            PlayerInput.lastPressedKey = code;
+            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                Player2Input.lastPressedKey = code;
+            }
+        });
+
+        scene.setOnKeyReleased(keyEvent -> {
+            String code = keyEvent.getCode().toString();
+            KeyInput.keyInput.put(code, false);
+            PlayerInput.lastPressed();
+            if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                Player2Input.lastPressed();
+            }
+        });
+
+        // Xử lý thua
+        if ((backToMenu && !win) || (countDown != countDown_Max && !win)) {
+            if (countDown == countDown_Max) {
+                Sound.game_over.play();
+                stage.setScene(scene2);
+            }
+            backToMenu = false;
+            menu.renderMessage('l', gameMenuContext);
+            countDown--;
+        }
+
+        // Xử lý thắng
+        if ((backToMenu && win) || (countDown != countDown_Max && win)) {
+            if (countDown == countDown_Max) {
+                Sound.level_complete.play();
+                stage.setScene(scene2);
+            }
+            backToMenu = false;
+
+            if (currentLevel < (MAP_URLS.length)) {
+                menu.renderMessage('w', gameMenuContext);
+                if (countDown <= continue_delay) {
+                    menu.renderMessage('c', gameMenuContext);
+                }
+            } else {
+                menu.renderMessage('v', gameMenuContext);
+                win = false;
+            }
+            countDown--;
+        }
+
+        // Chuyển level hoặc về menu
+        if (countDown == 0) {
+            countDown = countDown_Max;
+
+            if (!win) {
+                gameStarted = false;
+                Sound.stage_sound.stop();
+                Sound.menu_sound.play();
+                Sound.menu_sound.loop();
+                backToMenu = true;
+                win = false;
+                return;
+            } else {
+                PlayerInput.lastPressedKey = null;
+                if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
+                    Player2Input.lastPressedKey = null;
+                }
+                KeyInput.keyInput.clear();
+                try {
+                    currentLevel++;
+                    map.createMap(MAP_URLS[currentLevel - 1]);
+                    map.resetNumber();
+                    backToMenu = false;
+                    win = false;
+                    stage.setScene(scene);
+                } catch (Exception e) {
+                    gameRestart();
+                    win = false;
+                    stage.setScene(scene2);
+                    currentLevel = 1;
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -336,10 +327,10 @@ public class MainGame extends Application {
         MainGame.win = win;
     }
 
-    public static void gameRestart() {
+    public void gameRestart() {
         paused = false;
         backToMenu = true;
-        choseStart = false;
+        gameStarted = false;
         menu.resetModeSelection();
         Sound.stage_sound.stop();
         Sound.menu_sound.play();

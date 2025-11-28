@@ -5,7 +5,6 @@ import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.character.enemy.Enemy;
 import entity.Entity;
-import entity.staticentity.Portal;
 import entity.staticentity.Wall;
 import game.MainGame;
 import graphics.Sprite;
@@ -46,13 +45,8 @@ public abstract class Character extends AnimateEntity {
         this.velocityY = velocityY;
     }
 
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
+    public int getSpeed() {return speed;}
+    public void setSpeed(int speed) {this.speed = speed;}
 
     public DIRECTION getDirection() {
         return direction;
@@ -61,7 +55,6 @@ public abstract class Character extends AnimateEntity {
     public boolean isCollider() {
         return isCollision;
     }
-
 
     public void addVelocity(int velocityX, int velocityY) {
         this.velocityX += velocityX;
@@ -85,19 +78,9 @@ public abstract class Character extends AnimateEntity {
 
                 Entity entity = map.getTile(j, i);
 
-                // Block collision (Wall, Brick, Portal, etc.)
+                // Block collision (Wall, Brick, etc.)
                 if (entity.isBlock() && this.isCollider(entity)) {
                     isCollision = true;
-                }
-
-                // Bomber vào portal
-                if (this instanceof Bomber && this.isCollider(entity)
-                        && entity instanceof Portal
-                        && ((Portal) entity).isAccessAble()
-                        && entity.getTileX() == j && entity.getTileY() == i) {
-
-                    MainGame.setBackToMenu(true);
-                    MainGame.setWin(true);
                 }
             }
         }

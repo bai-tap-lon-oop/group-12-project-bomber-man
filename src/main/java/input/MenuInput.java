@@ -1,13 +1,12 @@
 package input;
 
-import java.util.HashMap;
 import java.util.Set;
 import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class MenuInput implements KeyInput {
-    private HashMap<String, Boolean> keyInput = new HashMap<>();
 
+    @Override
     public void initialization() {
         keyInput.put("W", false);
         keyInput.put("S", false);

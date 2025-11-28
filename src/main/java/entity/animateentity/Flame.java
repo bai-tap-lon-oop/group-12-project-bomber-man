@@ -41,6 +41,7 @@ public class Flame extends AnimateEntity {
         }
     }
 
+    // Xử lý va chạm với các thực thể khác
     public void interactWith(Entity entity) {
         if (entity instanceof Brick) {
             ((Brick) entity).destroyed = true;
@@ -55,9 +56,6 @@ public class Flame extends AnimateEntity {
             else if (entity instanceof FlameItem) {
                 entity.setSprite(Sprite.powerup_flames);
             }
-        } else if (entity instanceof Portal) {
-            entity.setBlock(false);
-            entity.setSprite(Sprite.portal);
         }
     }
 
