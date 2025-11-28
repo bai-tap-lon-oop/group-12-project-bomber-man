@@ -85,6 +85,13 @@ public abstract class Character extends AnimateEntity {
                 if (entity.isBlock() && this.isCollider(entity)) {
                     isCollision = true;
                 }
+
+                if (this instanceof Enemy && entity instanceof entity.staticentity.Item) {
+                    if (this.isCollider(entity)) {
+                        isCollision = true;
+                    }
+                }
+
                 if (this instanceof Bomber && this.isCollider(entity) && entity instanceof Portal && ((Portal) entity).isAccessAble() && entity.getTileX() == j && entity.getTileY() == i) {
                     MainGame.setBackToMenu(true);
                     MainGame.setWin(true);

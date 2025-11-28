@@ -135,7 +135,7 @@ public class MainGame extends Application {
                     }
                     if (countdown == 0) {
                         win = false;            // Đảm bảo không còn lưu trạng thái thắng cũ
-                        MainGame.score = 0;     // (Tùy chọn) Reset điểm nếu muốn chơi lại từ đầu
+                        score = 0;     // (Tùy chọn) Reset điểm nếu muốn chơi lại từ đầu
                         PlayerInput.lastPressedKey = null;
                         KeyInput.keyInput.clear();
                         currentLevel = 1;
@@ -210,7 +210,7 @@ public class MainGame extends Application {
                         });
                         scene.setOnKeyReleased(keyEvent -> {
                             String code = keyEvent.getCode().toString();
-                            
+
                             // Player 1 input
                             KeyInput.keyInput.put(code, false);
                             if (KeyInput.keyInput.getOrDefault("W", false)) PlayerInput.lastPressedKey = "W";
@@ -224,7 +224,7 @@ public class MainGame extends Application {
                             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
                                 input.Player2Input p2Input = (input.Player2Input) map.getPlayer2().keyInput;
                                 p2Input.setKeyPressed(code, false);
-                                
+
                                 // Tìm phím còn đang được nhấn
                                 if (p2Input.isKeyPressed("UP")) p2Input.lastPressedKey = "UP";
                                 else if (p2Input.isKeyPressed("DOWN")) p2Input.lastPressedKey = "DOWN";
@@ -257,9 +257,9 @@ public class MainGame extends Application {
                             backToMenu = false;
 
                             // ----- HIỂN THỊ TỪNG PHẦN -----
-                            if(Map.getLevelNumber() < (MAP_URLS.length)) {
+                            if(currentLevel < (MAP_URLS.length)) {
                                 menu.renderMessage('w', gameMenuContext);
-                                if (countdown <= 70) {     // 160 -> 100 = 60 frame = ~1s
+                                if (countdown <= 70) {
                                     menu.renderMessage('c', gameMenuContext);
                                 }
                             }
@@ -288,7 +288,7 @@ public class MainGame extends Application {
                                 PlayerInput.lastPressedKey = null;
                                 KeyInput.keyInput.clear();
                                 try {
-                                    currentLevel++;  // ⚠ Quan trọng
+                                    currentLevel++;  // Quan trọng
                                     map.createMap(MAP_URLS[currentLevel - 1]);
                                     map.resetNumber();
 
