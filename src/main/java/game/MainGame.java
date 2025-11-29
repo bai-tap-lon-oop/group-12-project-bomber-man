@@ -241,6 +241,7 @@ public class MainGame extends Application {
         // Xử lý thua
         if ((backToMenu && !win) || (countDown != countDown_Max && !win)) {
             if (countDown == countDown_Max) {
+                Sound.stage_sound.stop();
                 Sound.game_over.play();
                 stage.setScene(scene2);
             }
