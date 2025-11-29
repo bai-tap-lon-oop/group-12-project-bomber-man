@@ -12,8 +12,6 @@ public class StaticTexture {
                 return new FlameItem(j, i, Sprite.BRICK[0]);
             case 'b':
                 return new BombItem(j ,i, Sprite.BRICK[0]);
-            case 'x':
-                return new Portal(j, i, Sprite.BRICK[0]);
             case 'y':
                 return new CoinItem(j, i, Sprite.coin);
             case '#':

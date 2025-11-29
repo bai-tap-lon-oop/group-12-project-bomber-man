@@ -9,16 +9,17 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomPath extends Path {
+
     public RandomPath(Map map, Bomber player, Enemy enemy) {
         super(map, player, enemy);
     }
-    // Tạo đường đi cho enemy random nhưng hợp lệ
+    
     public DIRECTION path() {
-//        Check khi có va chạm hoặc ở trung tâm 1 ô thì đổi hướng
+        // Check khi có va chạm hoặc ở trung tâm 1 ô thì đổi hướng
         if (enemy.isCollider() || enemy.isInATile()) {
-            ArrayList<DIRECTION> canDirections = new ArrayList<>(); // Chứa các hướng thể đi
+            ArrayList<DIRECTION> canDirections = new ArrayList<>();
             for (int k = 0; k < 4; k++) {
-//                Hướng có thể đi thì thêm vào list
+                // Hướng có thể đi thì thêm vào list
                 if (!enemy.checkTileCollider(intToDirection(k), false)) {
                     canDirections.add(intToDirection(k));
                 }

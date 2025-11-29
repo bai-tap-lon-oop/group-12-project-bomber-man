@@ -3,9 +3,7 @@ package entity.animateentity;
 import entity.Entity;
 import game.MainGame;
 import graphics.Sprite;
-
 import java.util.HashMap;
-
 import static variables.Variables.DIRECTION.DESTROYED;
 
 public abstract class AnimateEntity extends Entity {

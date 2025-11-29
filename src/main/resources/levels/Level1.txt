@@ -1,9 +1,9 @@
 1 13 31
 ############                  #
-#p########y#                  #
-#      1   #                  #
-#          #                  #
-# ########z#                  #
+#p #######z# #                #
+#y     1~~^# #                #
+#  z    ~~ # #                #
+#y######## # #                #
 ############                  #
                               #
                               #
@@ -25,10 +25,12 @@ Tiles:
 * - Brick
 x - Portal
 y - Coin
-z - Switch
+z - Key
+~ - Swamp
+^ - Spike Trap
 
 Character:
-p - Bomber
+p - Bomber (Player 1)
 1 - Balloon
 2 - Oneal
 3 - Doll
@@ -40,4 +42,4 @@ b - Bomb Item
 f - Flame Item
 s - Speed Item
 
-Kí tự khác các kí tự trên - Grass
+Kí tự khác các kí tự trên: Grass

@@ -1,17 +1,21 @@
 package map;
 
 import entity.Entity;
+import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.Flame;
+import entity.animateentity.SpikeTrap;
+import entity.animateentity.Swamp;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
+import entity.staticentity.Grass;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
-import entity.staticentity.StaticEntity;
 import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;
+import graphics.Sprite;
 import texture.*;
 import static variables.Variables.*;
 import static graphics.Sprite.*;
@@ -31,6 +35,7 @@ public class Map {
     private int time = 60 * 200;
     private Image topInfoImage;
     private Bomber player;
+    private Bomber player2;
     private boolean revival;
     private int renderX;
     private int renderY;
@@ -41,6 +46,8 @@ public class Map {
     private ArrayList<Flame> flames;
     private ArrayList<Item> items;
     private ArrayList<Score> scores;
+    private ArrayList<SpikeTrap> spikeTraps;
+    private ArrayList<Swamp> swamps;
 
     public static Map getGameMap() {
         if (map == null) {
@@ -50,12 +57,22 @@ public class Map {
     }
 
     private void resetEntities() {
+        if (enemies != null) enemies.clear();
+        if (bombs != null) bombs.clear();
+        if (flames != null) flames.clear();
+        if (items != null) items.clear();
+        if (scores != null) scores.clear();
+        if (spikeTraps != null) spikeTraps.clear();
+        if (swamps != null) swamps.clear();
+
         tiles = new Entity[HEIGHT][WIDTH];
         enemies = new ArrayList<>();
         bombs = new ArrayList<>();
         flames = new ArrayList<>();
         items = new ArrayList<>();
         scores = new ArrayList<>();
+        spikeTraps = new ArrayList<>();
+        swamps = new ArrayList<>();
     }
 
     public ArrayList<Enemy> getEnemies() {
@@ -77,10 +94,27 @@ public class Map {
         levelNumber = _string.charAt(0) - '0';
         resetEntities();
         revival = false;
+        player = null;
+        player2 = null; // Reset player2 khi tạo map mới
         for (int i = 0; i < HEIGHT; i++) {
             String string = scanner.nextLine();
             for (int j = 0; j < WIDTH; j++) {
                 char c = string.charAt(j);
+                
+                // Kiểm tra AnimateEntity trước (SpikeTrap, Swamp)
+                AnimateEntity animateEntity = texture.AnimationEntityTexture.setAnimateEntity(c, i, j);
+                if (animateEntity != null) {
+                    tiles[i][j] = new Grass(j, i, Sprite.grass); // Đặt Grass bên dưới
+                    // Thêm vào danh sách entities động
+                    if (animateEntity instanceof SpikeTrap) {
+                        spikeTraps.add((SpikeTrap) animateEntity);
+                    } else if (animateEntity instanceof Swamp) {
+                        swamps.add((Swamp) animateEntity);
+                    }
+                    continue;
+                }
+                
+                // Xử lý StaticEntity
                 tiles[i][j] = StaticTexture.setStatic(c, i, j);
                 if (tiles[i][j] instanceof Item) {
                     items.add((Item) tiles[i][j]);
@@ -88,6 +122,8 @@ public class Map {
                 if (c == '*') {
                     tiles[i][j] = BrickTexture.setBrick(i, j);
                 }
+                
+                // Xử lý Character
                 Character character = CharacterTexture.setCharacter(c, i, j);
 
                 if (character != null) {
@@ -98,6 +134,11 @@ public class Map {
                     }
                 }
             }
+        }
+
+        // Nếu chế độ 2 players, tạo player2 ở vị trí bên cạnh player1
+        if (Menu.getGameMode() == 2 && player != null) {
+            player2 = (Bomber) CharacterTexture.setCharacter('q', player.getTileY(), player.getTileX() + 1);
         }
     }
 
@@ -177,6 +218,9 @@ public class Map {
             enemy.update();
         });
         player.update();
+        if (player2 != null) {
+            player2.update();
+        }
         bombs.forEach(bomb -> {
             bomb.update();
         });
@@ -188,6 +232,12 @@ public class Map {
         });
         scores.forEach(score -> {
             score.update();
+        });
+        spikeTraps.forEach(trap -> {
+            trap.update();
+        });
+        swamps.forEach(swamp -> {
+            swamp.update();
         });
         removeEntities();
     }
@@ -211,7 +261,7 @@ public class Map {
             graphicsContext.fillText("Time: " + String.valueOf(time), 0.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
             MainGame.setBackToMenu(true);
         }
-        graphicsContext.fillText("Stage: " + String.valueOf(levelNumber), 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
+        graphicsContext.fillText("Stage: " + String.valueOf(MainGame.currentLevel), 10.6 * SCALED_SIZE, SCALED_SIZE * 0.8);
         graphicsContext.fillText("Life: " + String.valueOf(player.getLife()), 10.6 * SCALED_SIZE, SCALED_SIZE * 1.6);
         if(player.getLife() == 0) {
             MainGame.setBackToMenu(true);
@@ -235,6 +285,9 @@ public class Map {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
 
     }
 
@@ -266,6 +319,12 @@ public class Map {
                 tiles[i][j].render(graphicsContext);
             }
         }
+        swamps.forEach(swamp -> {
+            swamp.render(graphicsContext);
+        });
+        spikeTraps.forEach(trap -> {
+            trap.render(graphicsContext);
+        });
         items.forEach(item -> {
             item.render(graphicsContext);
         });
@@ -273,6 +332,9 @@ public class Map {
             enemy.render(graphicsContext);
         });
         player.render(graphicsContext);
+        if (player2 != null) {
+            player2.render(graphicsContext);
+        }
         bombs.forEach(bomb -> {
             bomb.render(graphicsContext);
         });
@@ -300,35 +362,16 @@ public class Map {
         return walls;
     }
 
-    public Bomber getPlayer() {
-        return this.player;
-    }
+    public Bomber getPlayer() {return this.player;}
+    public Bomber getPlayer2() {return this.player2;}
 
-    public ArrayList<Bomb> getBombs() {
-        return bombs;
-    }
+    public ArrayList<Bomb> getBombs() {return bombs;}
+    public ArrayList<Flame> getFlames() {return flames;}
+    public ArrayList<Item> getItems() {return items;}
 
-    public ArrayList<Flame> getFlames() {
-        return flames;
-    }
+    public int getRenderX() {return renderX;}
+    public int getRenderY() {return renderY;}
 
-    public ArrayList<Item> getItems() {
-        return items;
-    }
-
-    public int getRenderX() {
-        return renderX;
-    }
-
-    public int getRenderY() {
-        return renderY;
-    }
-
-    public void setRevival(boolean revival) {
-        this.revival = revival;
-    }
-
-    public static int getLevelNumber() {
-        return levelNumber;
-    }
+    public void setRevival(boolean revival) {this.revival = revival;}
+    public static int getLevelNumber() {return levelNumber;}
 }

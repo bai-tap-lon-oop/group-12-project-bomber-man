@@ -5,12 +5,15 @@ import entity.animateentity.character.Character;
 import entity.animateentity.character.enemy.*;
 import graphics.Sprite;
 import input.PlayerInput;
+import input.Player2Input;
 
 public class CharacterTexture {
     public static Character setCharacter(char c, int i, int j) {
         switch (c) {
             case 'p':
                 return new Bomber(j, i, Sprite.PLAYER_DOWN[0], new PlayerInput());
+            case 'q':
+                return new Bomber(j, i, Sprite.PLAYER_DOWN[0], new Player2Input());
             case '1':
                 return new Balloom(j, i, Sprite.BALLOOM_LEFT[0]);
             case '2':

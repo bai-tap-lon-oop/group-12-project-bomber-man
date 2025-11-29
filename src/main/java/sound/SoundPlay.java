@@ -12,7 +12,7 @@ public class SoundPlay {
         this.path = path;
         try {
             File file = new File(path);
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file.getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file.getAbsoluteFile());//đọc tệp âm thanh, chuyển thành luồng dữ liệu mà hệ thống âm thanh java hiểu được
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
         } catch (Exception e) {
@@ -29,6 +29,7 @@ public class SoundPlay {
     public void stop() {
         clip.stop();
     }
+
     public boolean isFinish() {
         return (clip.getMicrosecondLength() == clip.getMicrosecondPosition());
     }

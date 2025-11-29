@@ -15,6 +15,7 @@ import static variables.Variables.HEIGHT;
 import static variables.Variables.WIDTH;
 
 public class Kondoria extends Enemy {
+    
     public Kondoria(int x, int y, Sprite sprite) {
         super(x, y, sprite);
         animation.put(LEFT, KONDORIA_LEFT);

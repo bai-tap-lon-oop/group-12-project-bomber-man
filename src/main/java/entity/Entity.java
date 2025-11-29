@@ -20,15 +20,14 @@ public abstract class Entity {
     protected Image image;
 
     protected boolean block;
-
     protected boolean removed;
 
     public boolean outOfBound() {
         int mapWidthPx = Variables.WIDTH * Sprite.SCALED_SIZE;
         int mapHeightPx = Variables.HEIGHT * Sprite.SCALED_SIZE;
         return pixelX < 0 || pixelY < 0
-                || pixelX + sprite.getRealWidth()  > mapWidthPx
-                || pixelY + sprite.getRealHeight() > mapHeightPx;
+            || pixelX + sprite.getRealWidth()  > mapWidthPx
+            || pixelY + sprite.getRealHeight() > mapHeightPx;
     }
 
     public Entity(int x, int y, Sprite sprite) {
@@ -42,23 +41,13 @@ public abstract class Entity {
         this.removed = false;
     }
 
-    public static void setGameMap(Map map) {
-        Entity.map = map;
-    }
+    public static void setGameMap(Map map) {Entity.map = map;}
 
     public Rectangle2D getBorder() {
-
         return new Rectangle2D(pixelX, pixelY, sprite.getRealWidth(), sprite.getRealHeight());
     }
 
-    public void remove() {
-        removed = true;
-    }
-
-    public boolean isRemoved() {
-        return removed;
-    }
-
+ 
     public boolean isCollider(Entity entity) {
         if (entity == null) return false;
         return getBorder().intersects(entity.getBorder());
@@ -77,21 +66,18 @@ public abstract class Entity {
         tileY = pixelY / SCALED_SIZE;
     }
 
-    public int getTileX() {
-        return tileX;
-    }
+    public void remove() { removed = true;}
+    public boolean isRemoved() {return removed;}
 
-    public int getTileY() {
-        return tileY;
-    }
+    public boolean isBlock() {return block;}
+    public void setBlock(boolean block) {this.block = block;}
 
-    public int getPixelX() {
-        return pixelX;
-    }
+    public int getTileX() {return tileX;}
+    public int getTileY() {return tileY;}
 
-    public int getPixelY() {
-        return pixelY;
-    }
+    public int getPixelX() {return pixelX;}
+    public int getPixelY() {return pixelY;}
+
     public void setTile(int x, int y) {
         tileX = x;
         tileY = y;
@@ -99,17 +85,8 @@ public abstract class Entity {
         pixelY = tileY * SCALED_SIZE;
     }
 
-
     public boolean isInATile() {
         return (pixelX % SCALED_SIZE == 0 && pixelY % SCALED_SIZE == 0);
-    }
-
-    public boolean isBlock() {
-        return block;
-    }
-
-    public void setBlock(boolean block) {
-        this.block = block;
     }
 
     public void setSprite(Sprite sprite) {

@@ -1,11 +1,9 @@
 package entity.animateentity.character;
 
-import com.sun.tools.javac.Main;
 import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.character.enemy.Enemy;
 import entity.Entity;
-import entity.staticentity.Portal;
 import entity.staticentity.Wall;
 import game.MainGame;
 import graphics.Sprite;
@@ -45,29 +43,15 @@ public abstract class Character extends AnimateEntity {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
     }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public DIRECTION getDirection() {
-        return direction;
-    }
-
-    public boolean isCollider() {
-        return isCollision;
-    }
-
-
+    
     public void addVelocity(int velocityX, int velocityY) {
         this.velocityX += velocityX;
         this.velocityY += velocityY;
     }
 
+    public DIRECTION getDirection() {return direction;}
+    public abstract void setDirection();
+    
     public void move() {
         pixelX += velocityX;
         pixelY += velocityY;
@@ -79,35 +63,38 @@ public abstract class Character extends AnimateEntity {
         isCollision = false;
         pixelX += this.velocityX;
         pixelY += this.velocityY;
+
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
+
                 Entity entity = map.getTile(j, i);
+
+                // Block collision (Wall, Brick, etc.)
                 if (entity.isBlock() && this.isCollider(entity)) {
                     isCollision = true;
                 }
-                if (this instanceof Bomber && this.isCollider(entity) && entity instanceof Portal && ((Portal) entity).isAccessAble() && entity.getTileX() == j && entity.getTileY() == i) {
-                    MainGame.setBackToMenu(true);
-                    MainGame.setWin(true);
-                }
             }
         }
+
         map.getBombs().forEach(bomb -> {
-            Entity entity1 = bomb;
-            if (entity1.isBlock() && this.isCollider(entity1)) {
+            if (bomb.isBlock() && this.isCollider(bomb)) {
                 if (immortal == 0) {
                     isCollision = true;
                 }
             }
-            if(this.isCollider(entity1) && this instanceof Enemy) {
+            if (this instanceof Enemy && this.isCollider(bomb)) {
                 if (immortal == 0) {
                     isCollision = true;
                 }
             }
         });
+
         stand = (velocityX == 0 && velocityY == 0) || isCollision;
         pixelX -= this.velocityX;
         pixelY -= this.velocityY;
     }
+    
+    public boolean isCollider() {return isCollision;}
 
     @Override
     public void update() {
@@ -137,9 +124,7 @@ public abstract class Character extends AnimateEntity {
         }
     }
 
-    public int getLife() {
-        return life;
-    }
+    public int getLife() {return life;}
 
     public boolean checkTileCollider(DIRECTION direction, boolean dodge) {
         boolean ok = false;
@@ -180,14 +165,12 @@ public abstract class Character extends AnimateEntity {
         this.setPosition(lastPixelX, lastPixelY);
         return ok;
     }
+    
+    public int getSpeed() {return speed;}
+    public void setSpeed(int speed) {this.speed = speed;}
 
-    public int getImmortal() {
-        return immortal;
-    }
-
-    public void setImmortal(int immortal) {
-        this.immortal = immortal;
-    }
+    public int getImmortal() {return immortal;}
+    public void setImmortal(int immortal) {this.immortal = immortal;}
 
     @Override
     public void updateAnimation() {
@@ -195,6 +178,4 @@ public abstract class Character extends AnimateEntity {
         sprite = Sprite.movingSprite(currentAnimate, 3, time * this.speed);
         image = sprite.getFxImage();
     }
-
-    public abstract void setDirection();
 }

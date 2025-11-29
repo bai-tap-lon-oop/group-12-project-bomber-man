@@ -2,9 +2,6 @@ package graphics;
 
 import javafx.scene.image.*;
 
-/**
- * Lưu trữ thông tin các pixel của 1 sprite (hình ảnh game)
- */
 public class Sprite {
 
     public static final int DEFAULT_SIZE = 16;
@@ -17,23 +14,21 @@ public class Sprite {
     protected int _realHeight;
     private SpriteSheet _sheet;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Board sprites
-    |--------------------------------------------------------------------------
-     */
-    public static Sprite grass = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 16, 16);
-    public static Sprite[] BRICK = {
-            new Sprite(DEFAULT_SIZE, 7, 0, SpriteSheet.tiles, 16, 16),
-    };
+    // Các sprite tĩnh
     public static Sprite wall = new Sprite(DEFAULT_SIZE, 5, 0, SpriteSheet.tiles, 16, 16);
-    public static Sprite portal = new Sprite(DEFAULT_SIZE, 4, 0, SpriteSheet.tiles, 14, 14);
+    public static Sprite grass = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 16, 16);
+    public static Sprite[] BRICK = {new Sprite(DEFAULT_SIZE, 7, 0, SpriteSheet.tiles, 16, 16),};
+    public static Sprite coin =  new Sprite(DEFAULT_SIZE, 6, 11, SpriteSheet.tiles, 16, 16);
+    public static Sprite key = new Sprite(DEFAULT_SIZE, 7, 11, SpriteSheet.tiles, 16, 16);
+    public static Sprite swamp = new Sprite(DEFAULT_SIZE, 5, 1, SpriteSheet.tiles, 16, 16);
+    
+    public static Sprite spike_trap = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 14, 14);
+    public static Sprite[] spike_trap_active = {
+            new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
+            new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
+    };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Bomber Sprites
-    |--------------------------------------------------------------------------
-     */
+    // Player Sprites
     public static Sprite[] PLAYER_RIGHT = {
             new Sprite(DEFAULT_SIZE, 1, 0, SpriteSheet.tiles, 13, 16),
             new Sprite(DEFAULT_SIZE, 1, 1, SpriteSheet.tiles, 13, 16),
@@ -65,11 +60,6 @@ public class Sprite {
             new Sprite(DEFAULT_SIZE, 6, 2, SpriteSheet.tiles, 16, 13),
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Character
-    |--------------------------------------------------------------------------
-     */
     //BALLOOM
     public static Sprite[] BALLOOM_LEFT = {
             new Sprite(DEFAULT_SIZE, 9, 0, SpriteSheet.tiles, 16, 16),
@@ -167,11 +157,7 @@ public class Sprite {
     public static Sprite mob_dead2 = new Sprite(DEFAULT_SIZE, 15, 1, SpriteSheet.tiles, 16, 16);
     public static Sprite mob_dead3 = new Sprite(DEFAULT_SIZE, 15, 2, SpriteSheet.tiles, 16, 16);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Bomb Sprites
-    |--------------------------------------------------------------------------
-     */
+    // Bomb Sprites
     public static Sprite[] BOMB = {
             new Sprite(DEFAULT_SIZE, 0, 3, SpriteSheet.tiles, 15, 15),
             new Sprite(DEFAULT_SIZE, 1, 3, SpriteSheet.tiles, 13, 15),
@@ -179,11 +165,7 @@ public class Sprite {
 
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | FlameSegment Sprites
-    |--------------------------------------------------------------------------
-     */
+    // Flame Sprites
     public static Sprite[] BOMB_EXPLODED = {
             new Sprite(DEFAULT_SIZE, 0, 4, SpriteSheet.tiles, 16, 16),
             new Sprite(DEFAULT_SIZE, 0, 5, SpriteSheet.tiles, 16, 16),
@@ -225,21 +207,15 @@ public class Sprite {
             new Sprite(DEFAULT_SIZE, 2, 6, SpriteSheet.tiles, 16, 16),
             new Sprite(DEFAULT_SIZE, 3, 6, SpriteSheet.tiles, 16, 16),
     };
-    /*
-    |--------------------------------------------------------------------------
-    | Brick FlameSegment
-    |--------------------------------------------------------------------------
-     */
+    
+    // Brick exploded Sprites
     public static Sprite[] BRICK_EXPLODED = {
             new Sprite(DEFAULT_SIZE, 7, 1, SpriteSheet.tiles, 16, 16),
             new Sprite(DEFAULT_SIZE, 7, 2, SpriteSheet.tiles, 16, 16),
             new Sprite(DEFAULT_SIZE, 7, 3, SpriteSheet.tiles, 16, 16),
     };
-    /*
-    |--------------------------------------------------------------------------
-    | Powerups
-    |--------------------------------------------------------------------------
-     */
+    
+    // Powerup Sprites
     public static Sprite powerup_bombs = new Sprite(DEFAULT_SIZE, 0, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite powerup_flames = new Sprite(DEFAULT_SIZE, 1, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite powerup_speed = new Sprite(DEFAULT_SIZE, 2, 10, SpriteSheet.tiles, 16, 16);
@@ -248,11 +224,8 @@ public class Sprite {
     public static Sprite powerup_bombpass = new Sprite(DEFAULT_SIZE, 5, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite powerup_flamepass = new Sprite(DEFAULT_SIZE, 6, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite powerup_mystery = new Sprite(DEFAULT_SIZE, 7, 10, SpriteSheet.tiles, 16, 16);
-    /*
-    |--------------------------------------------------------------------------
-    | Scores
-    |--------------------------------------------------------------------------
-     */
+    
+    // Score Sprites for different enemies
     public static Sprite balloom_score = new Sprite(DEFAULT_SIZE, 8, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite oneal_score = new Sprite(DEFAULT_SIZE, 9, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite doll_score = new Sprite(DEFAULT_SIZE, 10, 10, SpriteSheet.tiles, 16, 16);
@@ -262,19 +235,6 @@ public class Sprite {
     public static Sprite pass_score = new Sprite(DEFAULT_SIZE, 14, 10, SpriteSheet.tiles, 16, 16);
     public static Sprite pontan_score = new Sprite(DEFAULT_SIZE, 15, 10, SpriteSheet.tiles, 16, 16);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Coin
-    |--------------------------------------------------------------------------
-     */
-    public static Sprite coin =  new Sprite(DEFAULT_SIZE, 6, 11, SpriteSheet.tiles, 16, 16);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Key
-    |--------------------------------------------------------------------------
-     */
-    public static Sprite key = new Sprite(DEFAULT_SIZE, 7, 11, SpriteSheet.tiles, 16, 16);
 
     public Sprite(int size, int x, int y, SpriteSheet sheet, int rw, int rh) {
         SIZE = size;
@@ -311,13 +271,8 @@ public class Sprite {
         return sprites[(int) ((time + 3) / 3 % animate)];
     }
 
-    public int getSize() {
-        return SIZE;
-    }
-
-    public int getPixel(int i) {
-        return _pixels[i];
-    }
+    public int getSize() {return SIZE;}
+    public int getPixel(int i) {return _pixels[i];}
 
     public Image getFxImage() {
         WritableImage wr = new WritableImage(SIZE, SIZE);
@@ -367,12 +322,6 @@ public class Sprite {
         return output;
     }
 
-    public int getRealWidth() {
-        return _realWidth;
-    }
-
-    public int getRealHeight() {
-        return _realHeight;
-    }
-
+    public int getRealWidth() {return _realWidth;}
+    public int getRealHeight() {return _realHeight;}
 }

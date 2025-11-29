@@ -6,6 +6,7 @@ import static variables.Variables.DIRECTION.*;
 
 public class MenuInput implements KeyInput {
 
+    @Override
     public void initialization() {
         keyInput.put("W", false);
         keyInput.put("S", false);
@@ -28,5 +29,11 @@ public class MenuInput implements KeyInput {
             }
         }
         return NONE;
+    }
+
+    public void setKeyPressed(String key, boolean pressed) {
+        if (keyInput.containsKey(key)) {
+            keyInput.put(key, pressed);
+        }
     }
 }

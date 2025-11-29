@@ -3,11 +3,11 @@
 Bài tập lớn môn Lập trình Hướng đối tượng - INT1332
 #### Người thực hiện:
 
-- Nguyễn Sỹ Hoàng
-- Nguyễn Minh Nghĩa
-- Hoàng Đức Trung
-- Trung Trung
-- Nam Thành
+- B23DCCN587 - Nguyễn Thành Nam
+- B23DCCN853 - Hoàng Đức Trung
+- B23DCCN340 - Nguyễn Sỹ Hoàng
+- B23DCKH122 - Nguyễn Quang Trung
+- B23DCCN601 - Nguyễn Minh Nghĩa
 
 ## Mô tả về các đối tượng trong trò chơi
 
@@ -19,9 +19,10 @@ Bài tập lớn môn Lập trình Hướng đối tượng - INT1332
 - ![](src/main/resources/sprites/grass.png) *Grass* là đối tượng mà Bomber và Enemy có thể di chuyển xuyên qua, và cho phép đặt Bomb lên vị trí của nó
 - ![](src/main/resources/sprites/wall.png) *Wall* là đối tượng cố định, không thể phá hủy bằng Bomb cũng như không thể đặt Bomb lên được, Bomber và Enemy không thể di chuyển vào đối tượng này
 - ![](src/main/resources/sprites/brick.png) *Brick* là đối tượng được đặt lên các ô Grass, không cho phép đặt Bomb lên nhưng có thể bị phá hủy bởi Bomb được đặt gần đó. Bomber và Enemy thông thường không thể di chuyển vào vị trí Brick khi nó chưa bị phá hủy.
-
-
-- ![](src/main/resources/sprites/portal.png) *Portal* là đối tượng được giấu phía sau một đối tượng Brick. Khi Brick đó bị phá hủy, Portal sẽ hiện ra và nếu tất cả Enemy đã bị tiêu diệt thì người chơi có thể qua Level khác bằng cách di chuyển vào vị trí của Portal.
+- ![](src/main/resources/sprites/coin.png) *Coin* là đối tượng được đặt lên các ô Grass, nhặt để tăng 100 điểm
+- ![](src/main/resources/sprites/switch.png) *Switch* là đối tượng được đặt lên các ô Grass, cần thiết để unlock màn mới
+- ![](src/main/resources/sprites/swamp.png) *Swamp* là đối tượng được đặt lên các ô Grass, Bomber khi di chuyển vào sẽ bị giảm tốc độ di chuyển, cho phép đặt bom và đi xuyên qua
+- ![](src/main/resources/sprites/spike_trap.png) *SpikeTrap* là đối tượng được đặt lên các ô Grass, theo chu kì sẽ đâm gai từ dưới lên tấn công Bomber, cho phép đặt bom lên trên và đi xuyên qua
 
 Các *Item* cũng được giấu phía sau Brick và chỉ hiện ra khi Brick bị phá hủy. Bomber có thể sử dụng Item bằng cách di chuyển vào vị trí của Item. Thông tin về chức năng của các Item được liệt kê như dưới đây:
 - ![](src/main/resources/sprites/powerup_speed.png) *SpeedItem* Khi sử dụng Item này, Bomber sẽ được tăng vận tốc di chuyển thêm một giá trị thích hợp
@@ -36,7 +37,7 @@ Các loại *Enemy* sẽ có tốc độ và cách thức hoạt động khác n
 - ![](src/main/resources/sprites/kondoria_left1.png) *Kondoria* có tốc độ di chuyển cố định, nó có thể đi xuyên qua các bricks, và nó luôn luôn đổi theo Bomber
 
 ## Mô tả game play, xử lý va chạm và xử lý bom nổ
-- Trong một màn chơi, Bomber sẽ được người chơi di chuyển, đặt và kích hoạt Bomb với mục tiêu chính là tiêu diệt tất cả Enemy và tìm ra vị trí Portal để có thể qua màn mới
+- Trong một màn chơi, Bomber sẽ được người chơi di chuyển, đặt và kích hoạt Bomb với mục tiêu chính là tiêu diệt tất cả Enemy và tìm ra vị trí switch để có thể qua màn mới
 - Bomber sẽ bị giết khi va chạm với Enemy hoặc thuộc phạm vi Bomb nổ. Lúc đấy trò chơi kết thúc.
 - Enemy bị tiêu diệt khi thuộc phạm vi Bomb nổ
 - Một đối tượng thuộc phạm vi Bomb nổ có nghĩa là đối tượng đó va chạm với một trong các tia lửa được tạo ra tại thời điểm một đối tượng Bomb nổ.
@@ -45,5 +46,6 @@ Các loại *Enemy* sẽ có tốc độ và cách thức hoạt động khác n
 - Khi các Flame xuất hiện, nếu có một đối tượng thuộc loại Brick/Wall nằm trên vị trí một trong các Flame thì độ dài Flame đó sẽ được giảm đi để sao cho Flame chỉ xuất hiện đến vị trí đối tượng Brick/Wall theo hướng xuất hiện. Lúc đó chỉ có đối tượng Brick/Wall bị ảnh hưởng bởi Flame, các đối tượng tiếp theo không bị ảnh hưởng. Còn nếu vật cản Flame là một đối tượng Bomb khác thì đối tượng Bomb đó cũng sẽ nổ ngay lập tức.
 
 ### Cây thừa kế cho các đối tượng của Game
-![image](https://user-images.githubusercontent.com/48708971/199369362-b2e6e8f6-7f84-4d05-9db3-215c6be3f573.png)
+<img width="1662" height="849" alt="cay_ke_thua" src="https://github.com/user-attachments/assets/8a4c8b5d-0944-4cec-bf32-e19a2c710816" />
+
 

@@ -41,6 +41,7 @@ public class Flame extends AnimateEntity {
         }
     }
 
+    // Xử lý va chạm với các thực thể khác
     public void interactWith(Entity entity) {
         if (entity instanceof Brick) {
             ((Brick) entity).destroyed = true;
@@ -55,9 +56,6 @@ public class Flame extends AnimateEntity {
             else if (entity instanceof FlameItem) {
                 entity.setSprite(Sprite.powerup_flames);
             }
-        } else if (entity instanceof Portal) {
-            entity.setBlock(false);
-            entity.setSprite(Sprite.portal);
         }
     }
 
@@ -67,8 +65,15 @@ public class Flame extends AnimateEntity {
                 enemy.destroy();
             }
         });
+
+        // Kiểm tra Player 1
         if (this.isCollider(map.getPlayer()) && map.getPlayer().getImmortal() == 0 && !map.getPlayer().isDestroyed()) {
             map.getPlayer().destroy();
+        }
+
+        // Kiểm tra Player 2
+        if (map.getPlayer2() != null && this.isCollider(map.getPlayer2()) && map.getPlayer2().getImmortal() == 0 && !map.getPlayer2().isDestroyed()) {
+            map.getPlayer2().destroy();
         }
     }
 
