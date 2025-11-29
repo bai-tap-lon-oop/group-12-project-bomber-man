@@ -3,11 +3,11 @@
 Bài tập lớn môn Lập trình Hướng đối tượng - INT1332
 #### Người thực hiện:
 
-B23DCCN587 - Nguyễn Thành Nam
-B23DCCN853 - Hoàng Đức Trung
-B23DCCN340 - Nguyễn Sỹ Hoàng
-B23DCKH122 - Nguyễn Quang Trung
-B23DCCN601 - Nguyễn Minh Nghĩa
+- B23DCCN587 - Nguyễn Thành Nam
+- B23DCCN853 - Hoàng Đức Trung
+- B23DCCN340 - Nguyễn Sỹ Hoàng
+- B23DCKH122 - Nguyễn Quang Trung
+- B23DCCN601 - Nguyễn Minh Nghĩa
 
 ## Mô tả về các đối tượng trong trò chơi
 
