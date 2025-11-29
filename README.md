@@ -46,5 +46,6 @@ Các loại *Enemy* sẽ có tốc độ và cách thức hoạt động khác n
 - Khi các Flame xuất hiện, nếu có một đối tượng thuộc loại Brick/Wall nằm trên vị trí một trong các Flame thì độ dài Flame đó sẽ được giảm đi để sao cho Flame chỉ xuất hiện đến vị trí đối tượng Brick/Wall theo hướng xuất hiện. Lúc đó chỉ có đối tượng Brick/Wall bị ảnh hưởng bởi Flame, các đối tượng tiếp theo không bị ảnh hưởng. Còn nếu vật cản Flame là một đối tượng Bomb khác thì đối tượng Bomb đó cũng sẽ nổ ngay lập tức.
 
 ### Cây thừa kế cho các đối tượng của Game
+<img width="1662" height="849" alt="cay_ke_thua" src="https://github.com/user-attachments/assets/8a4c8b5d-0944-4cec-bf32-e19a2c710816" />
 
 
