@@ -1,7 +1,7 @@
 1 13 31
 ############                  #
 #p #######z# #                #
-#yz    1  ^# #                #
+#y     1  ^# #                #
 #          # #                #
 #y######## # #                #
 ############                  #
@@ -25,7 +25,7 @@ Tiles:
 * - Brick
 x - Portal
 y - Coin
-z - Switch
+z - Key
 ~ - Swamp
 ^ - Spike Trap
 

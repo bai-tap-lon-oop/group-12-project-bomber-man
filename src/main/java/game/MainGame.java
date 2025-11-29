@@ -241,6 +241,7 @@ public class MainGame extends Application {
         // Xử lý thua
         if ((backToMenu && !win) || (countDown != countDown_Max && !win)) {
             if (countDown == countDown_Max) {
+                Sound.stage_sound.stop();
                 Sound.game_over.play();
                 stage.setScene(scene2);
             }
@@ -252,12 +253,14 @@ public class MainGame extends Application {
         // Xử lý thắng
         if ((backToMenu && win) || (countDown != countDown_Max && win)) {
             if (countDown == countDown_Max) {
+                Sound.stage_sound.stop();
                 Sound.level_complete.play();
                 stage.setScene(scene2);
             }
             backToMenu = false;
 
             if (currentLevel < (MAP_URLS.length)) {
+                Sound.stage_sound.stop();
                 menu.renderMessage('w', gameMenuContext);
                 if (countDown <= continue_delay) {
                     menu.renderMessage('c', gameMenuContext);
