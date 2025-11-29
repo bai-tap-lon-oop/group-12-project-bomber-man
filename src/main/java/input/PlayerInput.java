@@ -1,10 +1,24 @@
 package input;
 
+import java.util.HashMap;
 import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class PlayerInput implements KeyInput {
-    public static String lastPressedKey;
+    public String lastPressedKey;
+    private HashMap<String, Boolean> keyInput = new HashMap<>();
+
+    public void setKeyState(String key, boolean pressed) {
+        if (key.equals("W") || key.equals("A") || key.equals("S") || 
+            key.equals("D") || key.equals("SPACE")) {
+            keyInput.put(key, pressed);
+            if (pressed) {
+                lastPressedKey = key;
+            } else {
+                lastPressed();
+            }
+        }
+    }
 
     @Override
     public void initialization() {
@@ -32,7 +46,7 @@ public class PlayerInput implements KeyInput {
         return NONE;
     }
 
-    public static void lastPressed() {
+    private void lastPressed() {
         if (keyInput.getOrDefault("W", false)) lastPressedKey = "W";
         else if (keyInput.getOrDefault("A", false)) lastPressedKey = "A";
         else if (keyInput.getOrDefault("S", false)) lastPressedKey = "S";

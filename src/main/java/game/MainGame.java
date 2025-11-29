@@ -168,8 +168,6 @@ public class MainGame extends Application {
             countDown = countDown_Max;
             win = false;
             score = 0;
-            PlayerInput.lastPressedKey = null;
-            KeyInput.keyInput.clear();
             currentLevel = 1;
             backToMenu = false;
             gameStarted = true;
@@ -218,19 +216,17 @@ public class MainGame extends Application {
                 paused = true;
                 return;
             }
-            KeyInput.keyInput.put(code, true);
-            PlayerInput.lastPressedKey = code;
+            ((PlayerInput) map.getPlayer().keyInput).setKeyState(code, true);
             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                Player2Input.lastPressedKey = code;
+                ((Player2Input) map.getPlayer2().keyInput).setKeyState(code, true);
             }
         });
 
         scene.setOnKeyReleased(keyEvent -> {
             String code = keyEvent.getCode().toString();
-            KeyInput.keyInput.put(code, false);
-            PlayerInput.lastPressed();
+            ((PlayerInput) map.getPlayer().keyInput).setKeyState(code, false);
             if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                Player2Input.lastPressed();
+                ((Player2Input) map.getPlayer2().keyInput).setKeyState(code, false);
             }
         });
 
@@ -281,11 +277,10 @@ public class MainGame extends Application {
                 win = false;
                 return;
             } else {
-                PlayerInput.lastPressedKey = null;
+                map.getPlayer().keyInput.initialization();
                 if (map.getPlayer2() != null && map.getPlayer2().keyInput instanceof input.Player2Input) {
-                    Player2Input.lastPressedKey = null;
+                    map.getPlayer2().keyInput.initialization();
                 }
-                KeyInput.keyInput.clear();
                 try {
                     currentLevel++;
                     map.createMap(MAP_URLS[currentLevel - 1]);

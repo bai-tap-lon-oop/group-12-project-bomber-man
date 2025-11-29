@@ -1,10 +1,24 @@
 package input;
 
+import java.util.HashMap;
 import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class Player2Input implements KeyInput {
-    public static String lastPressedKey;
+    public String lastPressedKey;
+    private HashMap<String, Boolean> keyInput = new HashMap<>();
+
+    public void setKeyState(String key, boolean pressed) {
+        if (key.equals("UP") || key.equals("DOWN") || key.equals("LEFT") || 
+            key.equals("RIGHT") || key.equals("NUMPAD0")) {
+            keyInput.put(key, pressed);
+            if (pressed) {
+                lastPressedKey = key;
+            } else {
+                lastPressed();
+            }
+        }
+    }
 
     public void initialization() {
         keyInput.put("LEFT", false);
@@ -29,7 +43,7 @@ public class Player2Input implements KeyInput {
         return NONE;
     }
 
-    public static void lastPressed() {
+    private void lastPressed() {
         if (keyInput.getOrDefault("UP", false)) lastPressedKey = "UP";
         else if (keyInput.getOrDefault("LEFT", false)) lastPressedKey = "LEFT";
         else if (keyInput.getOrDefault("DOWN", false)) lastPressedKey = "DOWN";
