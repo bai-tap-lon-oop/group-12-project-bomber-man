@@ -19,7 +19,6 @@ public class Item extends StaticEntity{
 
     @Override
     public void update() {
-
     }
 
     public void delete() {

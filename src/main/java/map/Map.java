@@ -1,6 +1,7 @@
 package map;
 
 import entity.Entity;
+import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.Flame;
 import entity.animateentity.SpikeTrap;
@@ -8,11 +9,13 @@ import entity.animateentity.Swamp;
 import entity.animateentity.character.enemy.*;
 import entity.animateentity.character.Bomber;
 import entity.animateentity.character.Character;
+import entity.staticentity.Grass;
 import entity.staticentity.Item;
 import entity.staticentity.Score;
 import entity.staticentity.Wall;
 import game.MainGame;
 import game.Menu;
+import graphics.Sprite;
 import texture.*;
 import static variables.Variables.*;
 import static graphics.Sprite.*;
@@ -97,6 +100,21 @@ public class Map {
             String string = scanner.nextLine();
             for (int j = 0; j < WIDTH; j++) {
                 char c = string.charAt(j);
+                
+                // Kiểm tra AnimateEntity trước (SpikeTrap, Swamp)
+                AnimateEntity animateEntity = texture.AnimationEntityTexture.setAnimateEntity(c, i, j);
+                if (animateEntity != null) {
+                    tiles[i][j] = new Grass(j, i, Sprite.grass); // Đặt Grass bên dưới
+                    // Thêm vào danh sách entities động
+                    if (animateEntity instanceof SpikeTrap) {
+                        spikeTraps.add((SpikeTrap) animateEntity);
+                    } else if (animateEntity instanceof Swamp) {
+                        swamps.add((Swamp) animateEntity);
+                    }
+                    continue;
+                }
+                
+                // Xử lý StaticEntity
                 tiles[i][j] = StaticTexture.setStatic(c, i, j);
                 if (tiles[i][j] instanceof Item) {
                     items.add((Item) tiles[i][j]);
@@ -104,14 +122,8 @@ public class Map {
                 if (c == '*') {
                     tiles[i][j] = BrickTexture.setBrick(i, j);
                 }
-                if (c == '^') {
-                    SpikeTrap trap = new SpikeTrap(j, i, spike_trap);
-                    spikeTraps.add(trap);
-                }
-                if (c == '~') {
-                    Swamp swampEntity = new Swamp(j, i, graphics.Sprite.swamp);
-                    swamps.add(swampEntity);
-                }
+                
+                // Xử lý Character
                 Character character = CharacterTexture.setCharacter(c, i, j);
 
                 if (character != null) {
@@ -350,39 +362,16 @@ public class Map {
         return walls;
     }
 
-    public Bomber getPlayer() {
-        return this.player;
-    }
+    public Bomber getPlayer() {return this.player;}
+    public Bomber getPlayer2() {return this.player2;}
 
-    public Bomber getPlayer2() {
-        return this.player2;
-    }
+    public ArrayList<Bomb> getBombs() {return bombs;}
+    public ArrayList<Flame> getFlames() {return flames;}
+    public ArrayList<Item> getItems() {return items;}
 
-    public ArrayList<Bomb> getBombs() {
-        return bombs;
-    }
+    public int getRenderX() {return renderX;}
+    public int getRenderY() {return renderY;}
 
-    public ArrayList<Flame> getFlames() {
-        return flames;
-    }
-
-    public ArrayList<Item> getItems() {
-        return items;
-    }
-
-    public int getRenderX() {
-        return renderX;
-    }
-
-    public int getRenderY() {
-        return renderY;
-    }
-
-    public void setRevival(boolean revival) {
-        this.revival = revival;
-    }
-
-    public static int getLevelNumber() {
-        return levelNumber;
-    }
+    public void setRevival(boolean revival) {this.revival = revival;}
+    public static int getLevelNumber() {return levelNumber;}
 }

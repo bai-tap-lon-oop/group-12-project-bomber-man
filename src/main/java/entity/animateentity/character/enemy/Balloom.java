@@ -10,6 +10,7 @@ import static variables.Variables.DIRECTION.*;
 import static graphics.Sprite.*;
 
 public class Balloom extends Enemy{
+    
     public Balloom(int x, int y, Sprite sprite) {
         super(x, y, sprite);
         animation.put(LEFT, BALLOOM_LEFT);
@@ -23,6 +24,7 @@ public class Balloom extends Enemy{
         this.speed = 1;
         this.defaultCntMove = 5;
     }
+
     @Override
     public DIRECTION path(Map map, Bomber player, Enemy enemy){
         if (!enemy.isCollider() && cntMove > 0) {

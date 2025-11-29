@@ -17,21 +17,11 @@ public abstract class Enemy extends Character {
         super(x, y, sprite);
     }
 
-    public void setCntMove(int cntMove) {
-        this.cntMove = cntMove;
-    }
+    public void setCntMove(int cntMove) {this.cntMove = cntMove;}
+    public int getCntMove() {return this.cntMove;}
 
-    public int getCntMove() {
-        return this.cntMove;
-    }
-
-    public int getChangeSpeed() {
-        return this.changeSpeed;
-    }
-
-    public void setChangeSpeed(int changeSpeed) {
-        this.changeSpeed = changeSpeed;
-    }
+    public int getChangeSpeed() {return this.changeSpeed;}
+    public void setChangeSpeed(int changeSpeed) {this.changeSpeed = changeSpeed;}
 
     public abstract DIRECTION path(Map map, Bomber player, Enemy enemy);
     public void setDirection() {

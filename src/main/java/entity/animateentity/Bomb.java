@@ -16,7 +16,7 @@ public class Bomb extends AnimateEntity {
     private boolean right = true;
     private boolean down = true;
     private int cnt = 0;
-    private Bomber owner; // Player đặt bomb này
+    private Bomber owner;
 
     public Bomb(int x, int y, Sprite sprite) {
         super(x, y, sprite);
@@ -25,13 +25,8 @@ public class Bomb extends AnimateEntity {
         block = false;
     }
 
-    public void setOwner(Bomber owner) {
-        this.owner = owner;
-    }
-
-    public Bomber getOwner() {
-        return this.owner;
-    }
+    public void setOwner(Bomber owner) {this.owner = owner;}
+    public Bomber getOwner() {return this.owner;}
 
     @Override
     public void update() {
@@ -42,9 +37,9 @@ public class Bomb extends AnimateEntity {
         }
         // Khi bom nổ
         else {
-            delete(); // Xoá bom đi
-            Flame flm = FlameTexture.setFlame("be", this.tileX, this.tileY); // Tạo ngọn lửa khi bom nổ và lâ tọa độ x, y
-            map.getFlames().add(flm); // Thêm ngọn lửa vào arraylist<flame> của map
+            delete();
+            Flame flm = FlameTexture.setFlame("be", this.tileX, this.tileY);
+            map.getFlames().add(flm);
             // Duyệt vòng for để bomb nổ chạy từ vị trí 1 đến vị trí xa nhất bomb có thể nổ tới
             for(int i = 1; i <= flm.flameLength; i++) {
                 // Lấy tọa độ trung tâm khi bom nổ
@@ -138,7 +133,6 @@ public class Bomb extends AnimateEntity {
                     }
                 }
 
-                // Xử lý hình ngọn lửa ở cuối sẽ khác biệt
                 // Nếu là ngọn lửa cuối
                 if (i == flm.flameLength) {
                     if (down) {
@@ -181,18 +175,13 @@ public class Bomb extends AnimateEntity {
             }
             //Nếu bomb hiện tại nổ không kick hoạt bomb khác nổ thì phát âm thanh
             if(cnt == 0) {
-                Sound.bomb_explosion.play(); //Phát âm thanh
+                Sound.bomb_explosion.play();
             }
         }
     }
 
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
+    public int getLimit() {return limit;}
+    public void setLimit(int limit) {this.limit = limit;}
 
     public void setTimetoExplode(int timetoExplode) {
         this.timetoExplode = timetoExplode;

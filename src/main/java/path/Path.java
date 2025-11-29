@@ -107,6 +107,7 @@ public abstract class Path {
         }
 
     }
+    
     public abstract DIRECTION path();
 }
 

@@ -129,9 +129,13 @@ public class Bomber extends Character {
                         wall.setSprite(Sprite.grass);
                     });
                 }
+                else if (item instanceof CoinItem) {
+                    MainGame.setNewScore(100); 
+                }
                 item.delete();
             }
         });
+
         // Khi Bomber đi vào góc tường, sẽ tự động "trượt" thay vì bị kẹt cứng.
         if (isCollision) {
             for (int i = -8 - speed; i <= 8 + speed; i++) {
@@ -195,7 +199,7 @@ public class Bomber extends Character {
 
     @Override
     public void delete() {
-        // Trừ life của player1 (dùng chung life pool)
+        
         map.getPlayer().life--;
 
         timeRevival = 7;

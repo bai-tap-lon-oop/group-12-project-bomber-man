@@ -14,9 +14,9 @@ import static variables.Variables.HEIGHT;
 import static variables.Variables.WIDTH;
 
 public class Minvo extends Enemy {
+    
     public Minvo(int x, int y, Sprite sprite) {
         super(x, y, sprite);
-//        Khởi tạo sprite với hướng tương ứng
         animation.put(LEFT, MINVO_LEFT);
         animation.put(UP, MINVO_LEFT);
         animation.put(RIGHT, MINVO_RIGHT);
@@ -27,8 +27,9 @@ public class Minvo extends Enemy {
         this.defaultVel = 1;
         this.speed = 1;
         this.defaultCntMove = 5; // Di chuyển khoảng 5 frame trước khi đổi hướng
-        this.life = 2; // 2 mạng nổ 2 lần mới die
+        this.life = 2;
     }
+
     @Override
     public DIRECTION path(Map map, Bomber player, Enemy enemy) {
         if (!enemy.isCollider() && cntMove > 0) {

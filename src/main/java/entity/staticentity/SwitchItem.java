@@ -11,6 +11,5 @@ public class SwitchItem extends Item {
 
     @Override
     public void update() {
-
     }
 }

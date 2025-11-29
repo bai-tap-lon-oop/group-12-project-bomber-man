@@ -1,7 +1,6 @@
 package game;
 
 import input.MenuInput;
-import sound.Sound;
 import variables.Variables.DIRECTION;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -32,10 +31,9 @@ public class Menu {
     private int state = 1;
     private boolean start = false;
 
-    // Chế độ chơi: 1 = Single Player, 2 = Two Players
-    private static int gameMode = 1;
-    private boolean modeSelected = true; // Bắt đầu = true để hiển thị menu chính trước
-    private int modeState = 1; // 1 = Single Player, 2 = Two Players
+    private static int gameMode = 1; // lưu mode chơi đã chọn (default = 1)
+    private boolean modeSelected = true;
+    private int modeState = 1; // 1 = 1 Player, 2 = 2 Players
 
     public void createMenu() {
         newGame_Start = new Image("/menu/GameMenu_Start.png");
@@ -44,7 +42,8 @@ public class Menu {
         escButton = new Image("/menu/Button_ESC.png");
         qButton = new Image("/menu/Button_Q.png");
     }
-
+    
+    // giao diện menu chính
     public void renderMenu(GraphicsContext graphicsContext) {
         // Màn hình menu chính
         graphicsContext.drawImage(newGame_Start, 0, 0);
@@ -81,11 +80,12 @@ public class Menu {
         }
     }
 
+    // giao diện chọn mode
     public void renderModeSelection(GraphicsContext graphicsContext) {
         graphicsContext.drawImage(Background, 0, 0);
         graphicsContext.fillText("Select Game Mode", SCALED_SIZE * 4, SCALED_SIZE * 5);
 
-        // Highlight selected mode
+        // Hiển thị lựa chọn mode
         if (modeState == 1) {
             graphicsContext.setFill(Color.RED);
         } else {
@@ -117,9 +117,6 @@ public class Menu {
         }
     }
 
-    public boolean isModeSelected() {
-        return modeSelected;
-    }
 
     public void renderMessage(char c, GraphicsContext graphicsContext) {
         graphicsContext.drawImage(Background, 0, 0);
@@ -130,8 +127,7 @@ public class Menu {
             {
                 try {
                     String nextPath = MAP_URLS[MainGame.currentLevel];
-                    graphicsContext.fillText(String.format("Stage %d", MainGame.currentLevel + 1),
-                            SCALED_SIZE * 6, SCALED_SIZE * 7.5);
+                    graphicsContext.fillText(String.format("Stage %d", MainGame.currentLevel + 1), SCALED_SIZE * 6, SCALED_SIZE * 7.5);
                 } catch (Exception e) {
                     graphicsContext.fillText("Level Completed!", SCALED_SIZE * 4, SCALED_SIZE * 7.5);
                 }
@@ -148,29 +144,14 @@ public class Menu {
                 break;
         }
     }
-
-    public boolean isStart() {
-        return start;
-    }
-
-    public void setStart(boolean start) {
-        this.start = start;
-    }
-
-    public static int getHighscore() {
-        return highscore;
-    }
-
-    public static int getGameMode() {
-        return gameMode;
-    }
-
+    
     public void resetModeSelection() {
         modeSelected = true; // Reset về true để hiển thị menu chính
         modeState = 1;
         start = false;
     }
 
+    // giao diện pause menu
     public void renderPauseMenu(GraphicsContext graphicsContext) {
 
         graphicsContext.setFill(Color.rgb(0, 0, 0, 0.7));
@@ -179,18 +160,17 @@ public class Menu {
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.fillText("PAUSED", SCALED_SIZE * 5.7, SCALED_SIZE * 5);
 
-        // graphicsContext.fillText("Press", SCALED_SIZE * 2.5, SCALED_SIZE * 7.5);
-        // graphicsContext.drawImage(escButton, SCALED_SIZE * 5.2, SCALED_SIZE * 6.5);
-        // graphicsContext.fillText("to Resume", SCALED_SIZE * 7.7, SCALED_SIZE * 7.5);
-
-        // graphicsContext.fillText("Press", SCALED_SIZE * 3.7, SCALED_SIZE * 9.5);
-        // graphicsContext.drawImage(qButton, SCALED_SIZE * 6.4, SCALED_SIZE * 8.7);
-        // graphicsContext.fillText("to Quit", SCALED_SIZE * 7.9, SCALED_SIZE * 9.5);
-
         graphicsContext.drawImage(escButton, SCALED_SIZE * 4.2, SCALED_SIZE * 6.5);
         graphicsContext.fillText("Resume", SCALED_SIZE * 7.4, SCALED_SIZE * 7.5);
 
         graphicsContext.drawImage(qButton, SCALED_SIZE * 4.2, SCALED_SIZE * 8.7);
         graphicsContext.fillText("  Quit", SCALED_SIZE * 7.4, SCALED_SIZE * 9.5);
     }
+
+    public boolean isModeSelected() {return modeSelected;}
+    public boolean isStart() {return start;}
+    public void setStart(boolean start) {this.start = start;}
+
+    public static int getHighscore() {return highscore;}
+    public static int getGameMode() {return gameMode;}
 }

@@ -9,6 +9,7 @@ import variables.Variables.DIRECTION;
 import static variables.Variables.DIRECTION.*;
 
 public class Oneal extends Enemy{
+    
     public Oneal(int x, int y, Sprite sprite) {
         super(x, y, sprite);
         animation.put(UP, Sprite.ONEAL_LEFT);

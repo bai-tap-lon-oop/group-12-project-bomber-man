@@ -22,15 +22,15 @@ import static graphics.Sprite.SCALED_SIZE;
 import static variables.Variables.*;
 
 public class MainGame extends Application {
-    // Constants
-    private final int countDown_Max = 160;
+    private final int countDown_Max = 160; 
     private final int continue_delay = 70;
     
     public static int currentLevel = 1;
-    public static long time; 
-    
-    private static Map map = Map.getGameMap();
     private static int score = 0;
+    public static long time; // tạo time toàn cục để các class khác dùng chung
+    
+    private static Map map = Map.getGameMap(); 
+    
     private static boolean backToMenu = false;
     private static boolean win = false;
     
@@ -38,15 +38,15 @@ public class MainGame extends Application {
     private boolean paused = false;
     private boolean gameStarted = false;
 
-    private GraphicsContext graphicsContext;
+    private GraphicsContext graphicsContext;  
     private GraphicsContext topInfoContext;
     private GraphicsContext gameMenuContext;
 
     private final double FPS = 120.0;
-    private int countDown;
     private final long timePerFrame = (long) (1000000000 / FPS);
-    private long lastFrame;
+    private int countDown;
     private int frames;
+    private long lastFrame;
     private long startTime;
     private long lastTime;
 
@@ -69,9 +69,8 @@ public class MainGame extends Application {
         topInfoContext.setFill(Color.WHITE);
 
         gameMenuContext.setFont(menu_font);
-        gameMenuContext.setFill(Color.WHITE);
+        gameMenuContext.setFill(Color.WHITE); 
 
-        // ===== THIẾT LẬP SCENE =====
         // Scene 1: Game chính (topInfo + canvas)
         VBox root = new VBox(topInfo, canvas);
         Scene scene = new Scene(root);
@@ -82,32 +81,28 @@ public class MainGame extends Application {
 
         // Bắt đầu với menu
         stage.setScene(scene2);
-        stage.setResizable(false);  // Không cho resize cửa sổ
+        stage.setResizable(false);
         stage.getIcons().add(new Image("/icon.png"));
         stage.show();
 
-        // ===== KHỞI TẠO TIMING =====
+        // khơi tạo 
         startTime = System.nanoTime();
         lastFrame = 0;
         lastTime = 0;
-
-        // ===== KHỞI TẠO MENU VÀ ÂM THANH =====
+        countDown = countDown_Max;
         menu.createMenu();
         Sound.menu_sound.play();
         Sound.menu_sound.loop();
 
-        countDown = countDown_Max; // Countdown cho hiệu ứng chuyển cảnh
-
-        // ===== GAME LOOP - ANIMATION TIMER =====
+        // ===== GAME LOOP =====
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long currentTime) {
                 long now = currentTime - startTime;
-
+                
                 if (!gameStarted || backToMenu) {
                     handleMenuState(scene, scene2, stage);
                 } else {
-                    // ===== GAME LOOP CHÍNH =====
                     if (now - lastFrame >= timePerFrame) {
                         lastFrame = now;
 
@@ -120,7 +115,7 @@ public class MainGame extends Application {
                     }
                 }
 
-                // ===== TÍNH FPS THỰC TẾ =====
+                // fps
                 frames++;
                 if (now - lastTime >= 1000000000) {
                     stage.setTitle(GAME_TITLE + " | " + frames + " FPS");
@@ -159,6 +154,7 @@ public class MainGame extends Application {
             }
         });
 
+        // nếu đã nhấn start
         if (menu.isStart() || countDown != countDown_Max) {
             if (countDown == countDown_Max) {
                 Sound.menu_sound.stop();
@@ -167,20 +163,20 @@ public class MainGame extends Application {
             countDown--;
             menu.renderMessage('s', gameMenuContext);
         }
-
+        // chuyển sang chơi game
         if (countDown == 0) {
+            countDown = countDown_Max;
             win = false;
             score = 0;
             PlayerInput.lastPressedKey = null;
             KeyInput.keyInput.clear();
             currentLevel = 1;
-            countDown = countDown_Max;
             backToMenu = false;
             gameStarted = true;
             Sound.menu_sound.stop();
             Sound.stage_sound.play();
             Sound.stage_sound.loop();
-            // Tạo map TRƯỚC khi chuyển scene để tránh NullPointerException
+            // Tạo map trc khi chuyển scene
             try {
                 map.createMap(MAP_URLS[currentLevel - 1]);
                 map.resetNumber();
@@ -296,6 +292,8 @@ public class MainGame extends Application {
                     map.resetNumber();
                     backToMenu = false;
                     win = false;
+                    Sound.stage_sound.play();
+                    Sound.stage_sound.loop();
                     stage.setScene(scene);
                 } catch (Exception e) {
                     gameRestart();
@@ -307,24 +305,17 @@ public class MainGame extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        launch();  // Khởi động JavaFX Application
-    }
-
-    public static int getScore() {return score;}
+    public static void main(String[] args) {launch();}
+    
     public static void setNewScore(int enemy_score) {MainGame.score = score + enemy_score;}
+    public static int getScore() {return score;}
+    public static void setWin(boolean win) {MainGame.win = win;}
 
     public static void setBackToMenu(boolean backToMenu) {
         MainGame.backToMenu = backToMenu;
-
-        // Xóa bom đầu tiên nếu còn (tránh lỗi khi reset)
         if (map.getBombs().size() > 0) {
             map.getBombs().remove(0);
         }
-    }
-
-    public static void setWin(boolean win) {
-        MainGame.win = win;
     }
 
     public void gameRestart() {

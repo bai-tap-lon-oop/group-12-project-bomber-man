@@ -1,6 +1,5 @@
 package entity.animateentity.character;
 
-import com.sun.tools.javac.Main;
 import entity.animateentity.AnimateEntity;
 import entity.animateentity.Bomb;
 import entity.animateentity.character.enemy.Enemy;
@@ -44,23 +43,15 @@ public abstract class Character extends AnimateEntity {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
     }
-
-    public int getSpeed() {return speed;}
-    public void setSpeed(int speed) {this.speed = speed;}
-
-    public DIRECTION getDirection() {
-        return direction;
-    }
-
-    public boolean isCollider() {
-        return isCollision;
-    }
-
+    
     public void addVelocity(int velocityX, int velocityY) {
         this.velocityX += velocityX;
         this.velocityY += velocityY;
     }
 
+    public DIRECTION getDirection() {return direction;}
+    public abstract void setDirection();
+    
     public void move() {
         pixelX += velocityX;
         pixelY += velocityY;
@@ -102,7 +93,8 @@ public abstract class Character extends AnimateEntity {
         pixelX -= this.velocityX;
         pixelY -= this.velocityY;
     }
-
+    
+    public boolean isCollider() {return isCollision;}
 
     @Override
     public void update() {
@@ -132,9 +124,7 @@ public abstract class Character extends AnimateEntity {
         }
     }
 
-    public int getLife() {
-        return life;
-    }
+    public int getLife() {return life;}
 
     public boolean checkTileCollider(DIRECTION direction, boolean dodge) {
         boolean ok = false;
@@ -175,14 +165,12 @@ public abstract class Character extends AnimateEntity {
         this.setPosition(lastPixelX, lastPixelY);
         return ok;
     }
+    
+    public int getSpeed() {return speed;}
+    public void setSpeed(int speed) {this.speed = speed;}
 
-    public int getImmortal() {
-        return immortal;
-    }
-
-    public void setImmortal(int immortal) {
-        this.immortal = immortal;
-    }
+    public int getImmortal() {return immortal;}
+    public void setImmortal(int immortal) {this.immortal = immortal;}
 
     @Override
     public void updateAnimation() {
@@ -190,6 +178,4 @@ public abstract class Character extends AnimateEntity {
         sprite = Sprite.movingSprite(currentAnimate, 3, time * this.speed);
         image = sprite.getFxImage();
     }
-
-    public abstract void setDirection();
 }

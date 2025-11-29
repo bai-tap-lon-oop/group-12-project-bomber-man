@@ -2,9 +2,6 @@ package graphics;
 
 import javafx.scene.image.*;
 
-/**
- * Lưu trữ thông tin các pixel của 1 sprite (hình ảnh game)
- */
 public class Sprite {
 
     public static final int DEFAULT_SIZE = 16;
@@ -23,16 +20,13 @@ public class Sprite {
     public static Sprite[] BRICK = {new Sprite(DEFAULT_SIZE, 7, 0, SpriteSheet.tiles, 16, 16),};
     public static Sprite coin =  new Sprite(DEFAULT_SIZE, 6, 11, SpriteSheet.tiles, 16, 16);
     public static Sprite key = new Sprite(DEFAULT_SIZE, 7, 11, SpriteSheet.tiles, 16, 16);
+    public static Sprite swamp = new Sprite(DEFAULT_SIZE, 5, 1, SpriteSheet.tiles, 16, 16);
     
-    // Spike Trap Sprites
     public static Sprite spike_trap = new Sprite(DEFAULT_SIZE, 6, 0, SpriteSheet.tiles, 14, 14);
     public static Sprite[] spike_trap_active = {
             new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
             new Sprite(DEFAULT_SIZE, 6, 1, SpriteSheet.tiles, 14, 14),
     };
-
-    // Swamp Sprites
-    public static Sprite swamp = new Sprite(DEFAULT_SIZE, 5, 1, SpriteSheet.tiles, 16, 16);
 
     // Player Sprites
     public static Sprite[] PLAYER_RIGHT = {
@@ -277,13 +271,8 @@ public class Sprite {
         return sprites[(int) ((time + 3) / 3 % animate)];
     }
 
-    public int getSize() {
-        return SIZE;
-    }
-
-    public int getPixel(int i) {
-        return _pixels[i];
-    }
+    public int getSize() {return SIZE;}
+    public int getPixel(int i) {return _pixels[i];}
 
     public Image getFxImage() {
         WritableImage wr = new WritableImage(SIZE, SIZE);
@@ -333,12 +322,6 @@ public class Sprite {
         return output;
     }
 
-    public int getRealWidth() {
-        return _realWidth;
-    }
-
-    public int getRealHeight() {
-        return _realHeight;
-    }
-
+    public int getRealWidth() {return _realWidth;}
+    public int getRealHeight() {return _realHeight;}
 }
